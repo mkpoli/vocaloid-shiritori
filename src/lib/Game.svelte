@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { check } from "$lib/shiritori";
+
 	let word = $state('');
 	let words: string[] = $state([]);
 
@@ -17,8 +19,19 @@
 
 <form
 	onsubmit={(e) => {
-		e.preventDefault();
-		addWord(word);
+    e.preventDefault();
+    if (!word) {
+      alert('曲名を入力してください');
+      return;
+    }
+    const lastWord = words.at(-1) ?? '';
+    if (word && (words.length == 0 || check(lastWord, word))) {
+      addWord(word);
+    } else {
+      alert('その曲名はしりとりのルール違反です');
+    }
+    // TODO: Better alert
+    // TODO: Show error type and context
 		word = '';
 	}}
 >
