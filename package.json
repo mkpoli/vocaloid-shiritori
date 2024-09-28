@@ -29,5 +29,9 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write ."
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"kanadaku": "^1.1.0",
+		"wanakana": "^5.3.1"
+	}
 }
