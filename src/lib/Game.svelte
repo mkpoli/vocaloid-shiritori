@@ -16,7 +16,7 @@
 	}
 </script>
 
-<ul>
+<ul class="list-disc list-inside">
 	{#each words as word}
 		<li>
 			{word}
@@ -25,6 +25,7 @@
 </ul>
 
 <form
+  class="flex gap-2 items-center justify-center"
 	onsubmit={(e) => {
 		e.preventDefault();
 
@@ -66,6 +67,6 @@
 		word = '';
 	}}
 >
-	<input type="text" bind:value={word} placeholder="ボカロ曲名を入力してください" />
-	<button type="submit">追加</button>
+	<input type="text" bind:value={word} placeholder="ボカロ曲名を入力してください" class="border border-gray-300 rounded-md p-2" />
+	<button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">追加</button>
 </form>
