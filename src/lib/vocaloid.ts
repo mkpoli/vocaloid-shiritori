@@ -11,7 +11,8 @@ export async function load(): Promise<[string, string][]> {
 		.flatMap((data) => data.split('\n').map((line) => line.split(',')))
 		.map((data) => (data.length === 3 ? [data[1], data[2]] : [data[0], data[1]]))
 		.map(([vocaloid, yomigana]) => [yomigana, vocaloid] as [string, string])
-		.filter(([yomigana]) => yomigana);
+		.filter(([yomigana]) => yomigana)
+		.filter(([yomigana]) => !/\p{sc=Han}/u.test(yomigana));
 	// TODO: dedupe
 }
 
