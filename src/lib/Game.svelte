@@ -1,17 +1,15 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
-	import { check, getNextChar, indexNextChar, DEFAULT_SHIRITORI_OPTIONS } from '$lib/shiritori';
+	import { check, getNextChar, DEFAULT_SHIRITORI_OPTIONS } from '$lib/shiritori';
 	import type { Gamemode } from '$lib/game';
 	import { find } from '$lib/vocaloid';
 	import { onMount, setContext } from 'svelte';
-	import Thinking from '$lib/Thinking.svelte';
 	import Options from '$lib/game/Options.svelte';
+	import WordList from './game/WordList.svelte';
 
 	const { vocaloids, gamemode }: { vocaloids: Map<string, string>; gamemode: Gamemode } = $props();
 
 	setContext('vocaloids', vocaloids);
-
-	const segmenter = new Intl.Segmenter('ja', { granularity: 'grapheme' });
 
 	let word = $state('');
 	let words: [vocaloid: string, yomigana: string, sender: 'user' | 'computer'][] = $state([]);
@@ -101,36 +99,8 @@
 	</button>
 {/if}
 
-<ul class="mx-auto flex w-full list-inside flex-col items-center justify-start gap-2">
-	{#each words as [vocaloid, yomigana, sender]}
-		{@const index = indexNextChar(yomigana)}
-		<li
-			class="w-max rounded-md p-2 shadow-sm"
-			class:self-start={gamemode !== 'single' && sender === 'computer'}
-			class:bg-blue-50={gamemode !== 'single' && sender === 'computer'}
-			class:self-end={gamemode !== 'single' && sender === 'user'}
-			class:bg-green-50={gamemode !== 'single' && sender === 'user'}
-			class:self-center={gamemode === 'single'}
-			class:bg-gray-50={gamemode === 'single'}
-		>
-			<ruby class="inline-flex gap-1 self-end">
-				{vocaloid}
-				<rt class="text-gray-400">
-					{@html [...segmenter.segment(yomigana)]
-						.map(({ segment }, i, arr) =>
-							i === index ? `<span class="text-gray-500 font-bold">${segment}</span>` : segment
-						)
-						.join('')}
-				</rt>
-			</ruby>
-		</li>
-	{/each}
-	{#if thinking}
-		<li class="w-max rounded-md p-2 shadow-sm">
-			<Thinking />
-		</li>
-	{/if}
-</ul>
+<WordList {words} {gamemode} {thinking} />
+
 <form
 	class="flex items-center justify-center gap-2"
 	onsubmit={(e) => {
