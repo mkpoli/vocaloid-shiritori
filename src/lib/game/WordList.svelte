@@ -18,11 +18,11 @@
 	const segmenter = new Intl.Segmenter('ja', { granularity: 'grapheme' });
 </script>
 
-<ul class="mx-auto flex w-full list-inside flex-col items-center justify-start gap-2">
+<ul class="mx-auto flex w-full list-inside flex-col items-center justify-start gap-2 bg-white">
 	{#each words as [vocaloid, yomigana, sender]}
 		{@const index = indexNextChar(yomigana)}
 		<li
-			class="w-max rounded-md p-2 shadow-sm"
+			class="w-max rounded-md px-3 py-2 shadow-sm"
 			class:self-start={gamemode !== 'single' && sender === 'computer'}
 			class:bg-blue-50={gamemode !== 'single' && sender === 'computer'}
 			class:self-end={gamemode !== 'single' && sender === 'user'}
