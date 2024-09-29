@@ -17,6 +17,15 @@ export function convertSmallKana(a: string): string {
 		.replace(/ゎ/g, 'わ');
 }
 
+export interface ShiritoriOptions {
+	ignoreDakuten: boolean;
+	stripChouon: boolean;
+	allowN: boolean;
+	normalizeZiDiZuDu: boolean;
+	normalizeWiWeWo: boolean;
+	stripDiDuAsZiZu: boolean;
+}
+
 /**
  * しりとりをチェックする
  * @param a 前のワード
@@ -31,13 +40,18 @@ export function convertSmallKana(a: string): string {
 export function check(
 	a: string,
 	b: string,
-	ignoreDakuten: boolean = true,
-	stripChouon: boolean = true,
-	allowN: boolean = false,
-	normalizeZiDiZuDu: boolean = true,
-	normalizeWiWeWo: boolean = true,
-	stripDiDuAsZiZu: boolean = false
+
+	options?: Partial<ShiritoriOptions>
 ): boolean {
+	const {
+		ignoreDakuten = true,
+		stripChouon = true,
+		allowN = false,
+		normalizeZiDiZuDu = true,
+		normalizeWiWeWo = true,
+		stripDiDuAsZiZu = false
+	} = options ?? {};
+
 	if (stripChouon) {
 		a = a.replace(/ー/g, '');
 		// TODO: がぁ, ーー　etc.

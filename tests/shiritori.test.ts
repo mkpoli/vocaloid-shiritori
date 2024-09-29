@@ -35,8 +35,8 @@ describe('check', () => {
 	});
 
 	test('respecting dakuten', () => {
-		expect(check('まど', 'とんぼ', false)).toBe(false);
-		expect(check('まど', 'どんぶり', false)).toBe(true);
+		expect(check('まど', 'とんぼ', { ignoreDakuten: false })).toBe(false);
+		expect(check('まど', 'どんぶり', { ignoreDakuten: false })).toBe(true);
 	});
 
 	test('stripping chouon', () => {
@@ -46,9 +46,9 @@ describe('check', () => {
 	});
 
 	test('respecting chouon', () => {
-		expect(check('かー', 'アート', true, false)).toBe(false);
-		expect(check('スター', 'アーム', true, false)).toBe(true);
-		expect(check('パーティー', 'いカメラ', true, false)).toBe(true);
+		expect(check('かー', 'アート', { stripChouon: false })).toBe(false);
+		expect(check('スター', 'アーム', { stripChouon: false })).toBe(true);
+		expect(check('パーティー', 'いカメラ', { stripChouon: false })).toBe(true);
 	});
 
 	test('converting small kana', () => {
@@ -65,8 +65,8 @@ describe('check', () => {
 	});
 
 	test('stripping di, du as si, su', () => {
-		expect(check('まぢ', 'しま', true, true, true, true, false, true)).toBe(true);
-		expect(check('まづ', 'ずい', true, true, true, true, false, true)).toBe(true);
+		expect(check('まぢ', 'しま', { stripDiDuAsZiZu: true })).toBe(true);
+		expect(check('まづ', 'ずい', { stripDiDuAsZiZu: true })).toBe(true);
 	});
 
 	test('normalizing wi, we, wo', () => {
@@ -81,16 +81,16 @@ describe('check', () => {
 	});
 
 	test('allow words ending with ん when allowN is true', () => {
-		expect(check('さくら', 'らーめん', true, true, true)).toBe(true);
-		expect(check('ぶどう', 'うどん', true, true, true)).toBe(true);
-		expect(check('らーめん', 'んこ', true, true, true)).toBe(true);
-		expect(check('うどん', 'んま', true, true, true)).toBe(true);
+		expect(check('さくら', 'らーめん', { allowN: true })).toBe(true);
+		expect(check('ぶどう', 'うどん', { allowN: true })).toBe(true);
+		expect(check('らーめん', 'んこ', { allowN: true })).toBe(true);
+		expect(check('うどん', 'んま', { allowN: true })).toBe(true);
 	});
 
 	test('mixed cases with allowN', () => {
-		expect(check('ぱん', 'んぱん', true, true, true)).toBe(true);
-		expect(check('ぱんだ', 'だんご', true, true, true)).toBe(true);
-		expect(check('だんご', 'ごはん', true, true, true)).toBe(true);
+		expect(check('ぱん', 'んぱん', { allowN: true })).toBe(true);
+		expect(check('ぱんだ', 'だんご', { allowN: true })).toBe(true);
+		expect(check('だんご', 'ごはん', { allowN: true })).toBe(true);
 	});
 
 	test('edge cases', () => {
