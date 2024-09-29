@@ -108,7 +108,7 @@ export function check(
 		firstCharB = WI_WE_WO[firstCharB as keyof typeof WI_WE_WO] || firstCharB;
 	}
 
-	return lastCharA === firstCharB ? 'valid' : 'invalid';
+	return !lastCharA || lastCharA === firstCharB ? 'valid' : 'invalid';
 }
 
 /**

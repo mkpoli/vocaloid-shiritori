@@ -103,18 +103,16 @@
 		}
 
 		const [vocaloid, yomigana] = entry;
-		if (lastWord) {
-			const [_lastVocaloid, lastYomigana] = lastWord;
-			switch (check(lastYomigana, yomigana, { allowN })) {
-				case 'valid':
-					break;
-				case 'trailing-n':
-					alert('「ん」で終わる曲は追加できません');
-					return;
-				case 'invalid':
-					alert('しりとりが成立していません');
-					return;
-			}
+
+		switch (check(lastWord?.at(-1) ?? '', yomigana, { allowN })) {
+			case 'valid':
+				break;
+			case 'trailing-n':
+				alert('「ん」で終わる曲は追加できません');
+				return;
+			case 'invalid':
+				alert('しりとりが成立していません');
+				return;
 		}
 
 		words.push([vocaloid, yomigana]);
