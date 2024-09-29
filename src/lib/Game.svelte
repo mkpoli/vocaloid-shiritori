@@ -95,7 +95,7 @@
 			return;
 		}
 
-		const [yomigana, vocaloid] = entry;
+		const [vocaloid, yomigana] = entry;
 		if (
 			!(
 				!lastWord ||
