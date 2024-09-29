@@ -78,7 +78,7 @@
 	>
 {:else}
 	<button
-		class="rounded-md border-2 border-red-500 bg-white px-4 py-2 text-red-500 hover:bg-red-500 hover:text-white"
+		class="rounded-md border border-red-500 bg-white px-4 py-2 text-red-500 hover:bg-red-500 hover:text-white"
 		onclick={() => {
 			words = [];
 			word = '';
