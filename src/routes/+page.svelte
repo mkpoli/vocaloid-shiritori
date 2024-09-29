@@ -11,11 +11,12 @@
 <main class="flex flex-col gap-4 py-12 text-center">
 	<h1 class="text-2xl font-bold">ボカロ曲名しりとり！</h1>
 	<p class="text-lg">「ボカロ曲名しりとり！」とは、ボカロ曲名を使ったしりとりゲームです。</p>
+	<hr />
 
 	{#if gamemode}
 		<Game vocaloids={data.vocaloids} {gamemode} />
 	{:else}
-		<h2>モードを選択してください</h2>
+		<h2 class="text-lg">モードを選択してください</h2>
 
 		<button
 			class="rounded bg-blue-500 px-4 py-2 text-white"
