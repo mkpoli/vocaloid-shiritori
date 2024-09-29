@@ -8,18 +8,21 @@
 		console.log({ vocaloids });
 	}
 
-	let word = $state('');
-	let words: string[] = $state([]);
+  const segmenter = new Intl.Segmenter('ja', { granularity: 'grapheme' });
 
-	function addWord(word: string) {
-		words.push(word);
-	}
+	let word = $state('');
+	let words: [vocaloid: string, yomigana: string][] = $state([]);
 </script>
 
 <ul class="list-disc list-inside">
-	{#each words as word}
+	{#each words as [vocaloid, yomigana]}
 		<li>
-			{word}
+      <ruby class="flex">
+        {vocaloid}
+        <rt class="text-gray-400">
+          {@html [...segmenter.segment(yomigana)].map(({ segment }, i, arr) => i === arr.length - 1 ? `<span class="text-gray-500 font-bold">${segment}</span>` : segment).join('')}
+        </rt>
+      </ruby>
 		</li>
 	{/each}
 </ul>
@@ -43,7 +46,7 @@
 			console.info('Last word:', lastWord);
 		}
 
-		if (!(!lastWord || check(lastWord, word))) {
+		if (!(!lastWord || check(lastWord[0], word))) {
 			alert('その曲名はしりとりのルール違反です');
 			return;
 		}
@@ -59,7 +62,7 @@
 
 		const vocaloid = vocaloids.get(normalize(word));
 		if (vocaloid) {
-			addWord(vocaloid);
+			words.push([vocaloid, normalize(word)]);
 		}
 
 		// TODO: Better alert
