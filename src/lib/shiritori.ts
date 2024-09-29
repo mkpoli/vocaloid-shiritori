@@ -90,3 +90,17 @@ export function check(
 
 	return lastCharA === firstCharB;
 }
+
+/**
+ * ボカロ曲名のマップに曲名が存在するかどうかをチェックする
+ * @param map ボカロ曲名のマップ
+ * @param word 曲名
+ * @returns 曲名がマップに存在するかどうか
+ */
+export function checkInMap(map: Map<string, string>, word: string): boolean {
+  return map.has(toHiragana(word));
+}
+
+export function normalize(word: string): string {
+  return toHiragana(word);
+}

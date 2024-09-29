@@ -1,5 +1,12 @@
 <script lang="ts">
-	import { check } from "$lib/shiritori";
+	import { dev } from '$app/environment';
+	import { check, checkInMap, normalize } from '$lib/shiritori';
+
+	const { vocaloids }: { vocaloids: Map<string, string> } = $props();
+
+	if (dev) {
+		console.log({ vocaloids });
+	}
 
 	let word = $state('');
 	let words: string[] = $state([]);
@@ -19,19 +26,43 @@
 
 <form
 	onsubmit={(e) => {
-    e.preventDefault();
-    if (!word) {
-      alert('曲名を入力してください');
-      return;
-    }
-    const lastWord = words.at(-1) ?? '';
-    if (word && (words.length == 0 || check(lastWord, word))) {
-      addWord(word);
-    } else {
-      alert('その曲名はしりとりのルール違反です');
-    }
-    // TODO: Better alert
-    // TODO: Show error type and context
+		e.preventDefault();
+
+		if (dev) {
+			console.info('User input:', word);
+		}
+
+		if (!word) {
+			alert('曲名を入力してください');
+			return;
+		}
+
+		const lastWord = words.at(-1);
+		if (dev) {
+			console.info('Last word:', lastWord);
+		}
+
+		if (!(!lastWord || check(lastWord, word))) {
+			alert('その曲名はしりとりのルール違反です');
+			return;
+		}
+
+		if (!checkInMap(vocaloids, word)) {
+			alert('その曲名は存在しません');
+			return;
+		}
+
+		if (dev) {
+			console.info('Vocaloid:', vocaloids.get(normalize(word)));
+		}
+
+		const vocaloid = vocaloids.get(normalize(word));
+		if (vocaloid) {
+			addWord(vocaloid);
+		}
+
+		// TODO: Better alert
+		// TODO: Show error type and context
 		word = '';
 	}}
 >
