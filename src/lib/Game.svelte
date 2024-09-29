@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
-	import { check, normalize } from '$lib/shiritori';
+	import { check, normalize, indexNextChar } from '$lib/shiritori';
 	import { find } from './vocaloid';
 
 	const { vocaloids }: { vocaloids: Map<string, string> } = $props();
@@ -36,15 +36,14 @@
 
 <ul class="list-disc list-inside">
 	{#each words as [vocaloid, yomigana]}
+		{@const index = indexNextChar(yomigana)}
 		<li>
 			<ruby class="inline-flex">
 				{vocaloid}
 				<rt class="text-gray-400">
 					{@html [...segmenter.segment(yomigana)]
 						.map(({ segment }, i, arr) =>
-							i === arr.length - 1
-								? `<span class="text-gray-500 font-bold">${segment}</span>`
-								: segment
+							i === index ? `<span class="text-gray-500 font-bold">${segment}</span>` : segment
 						)
 						.join('')}
 				</rt>

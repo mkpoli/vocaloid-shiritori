@@ -92,6 +92,21 @@ export function check(
 }
 
 /**
+ * 単語の次のしりとり文字の位置を取得する
+ * @param word 単語
+ * @param stripChouon 長音を取るかどうか
+ * @returns 次の文字の位置
+ */
+export function indexNextChar(word: string, stripChouon: boolean = true): number {
+	// const normalized = normalize(word);
+	if (stripChouon && word.endsWith('ー')) {
+		return word.replace(/ー+$/, '').length - 1;
+	}
+
+	return word.length - 1;
+}
+
+/**
  * 曲名を正規化する
  * @param word 曲名
  * @returns 正規化された曲名
