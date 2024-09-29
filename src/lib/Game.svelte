@@ -17,7 +17,7 @@
 <ul class="list-disc list-inside">
 	{#each words as [vocaloid, yomigana]}
 		<li>
-      <ruby class="flex">
+      <ruby class="inline-flex">
         {vocaloid}
         <rt class="text-gray-400">
           {@html [...segmenter.segment(yomigana)].map(({ segment }, i, arr) => i === arr.length - 1 ? `<span class="text-gray-500 font-bold">${segment}</span>` : segment).join('')}
