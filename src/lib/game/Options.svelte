@@ -21,6 +21,8 @@
 			>曲）
 		</label>
 		<input type="checkbox" bind:checked={stripChouon} id="stripChouon" />
-		<label for="stripChouon"> 長音を取ります（オフの場合、母音の接続になります）</label>
+		<label for="stripChouon">
+			長音「ー」を取り除きます（オフの場合「シー」→「い」のように母音接続）</label
+		>
 	</div>
 </fieldset>
