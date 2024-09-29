@@ -35,6 +35,15 @@ export interface ShiritoriOptions {
 	stripDiDuAsZiZu: boolean;
 }
 
+export const DEFAULT_SHIRITORI_OPTIONS: ShiritoriOptions = {
+	ignoreDakuten: true,
+	stripChouon: true,
+	allowN: false,
+	normalizeZiDiZuDu: true,
+	normalizeWiWeWo: true,
+	stripDiDuAsZiZu: false
+};
+
 export type ShiritoriValidity = 'valid' | 'trailing-n' | 'invalid';
 
 /**
@@ -50,13 +59,16 @@ export function check(
 	options?: Partial<ShiritoriOptions>
 ): ShiritoriValidity {
 	const {
-		ignoreDakuten = true,
-		stripChouon = true,
-		allowN = false,
-		normalizeZiDiZuDu = true,
-		normalizeWiWeWo = true,
-		stripDiDuAsZiZu = false
-	} = options ?? {};
+		ignoreDakuten,
+		stripChouon,
+		allowN,
+		normalizeZiDiZuDu,
+		normalizeWiWeWo,
+		stripDiDuAsZiZu
+	} = {
+		...DEFAULT_SHIRITORI_OPTIONS,
+		...options
+	};
 
 	if (stripChouon) {
 		a = a.replace(/ー/g, '');
