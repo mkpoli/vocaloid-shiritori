@@ -11,8 +11,10 @@
 	let words: [vocaloid: string, yomigana: string][] = $state([]);
 
 	const left = $derived(
-		[...vocaloids].filter(([, yomigana]) => yomigana.startsWith(words.at(-1)?.at(-1)?.at(-1) ?? ''))
-		// .filter(([vocaloid]) => !words.some(([v]) => v === vocaloid))
+		[...vocaloids]
+			.filter(([, yomigana]) => yomigana.startsWith(words.at(-1)?.at(-1)?.at(-1) ?? ''))
+			.filter(([vocaloid]) => !words.some(([v]) => v === vocaloid))
+			.filter(([, yomigana]) => !yomigana.endsWith('ん'))
 	);
 
 	if (dev) {
