@@ -3,10 +3,14 @@
 	import { check, getNextChar, indexNextChar, DEFAULT_SHIRITORI_OPTIONS } from '$lib/shiritori';
 	import type { Gamemode } from '$lib/game';
 	import { find } from '$lib/vocaloid';
-	import { onMount } from 'svelte';
+	import { onMount, setContext } from 'svelte';
 	import Thinking from '$lib/Thinking.svelte';
+	import Options from '$lib/game/Options.svelte';
 
 	const { vocaloids, gamemode }: { vocaloids: Map<string, string>; gamemode: Gamemode } = $props();
+
+	setContext('vocaloids', vocaloids);
+
 	const segmenter = new Intl.Segmenter('ja', { granularity: 'grapheme' });
 
 	let word = $state('');
@@ -200,18 +204,4 @@
 	><span class="text-xs text-gray-500">{left.length}曲</span>
 </form>
 
-<fieldset class="flex flex-col gap-2 rounded-md border p-2">
-	<legend class=" bg-white px-2 text-lg font-bold">ルール設定</legend>
-	<div class="grid grid-cols-[auto_1fr] items-center justify-items-start gap-2 p-4">
-		<input type="checkbox" bind:checked={allowN} id="allowN" />
-		<label for="allowN">
-			撥音「ん」で終わることを許します （<span title="んで始まる曲"
-				>{[...vocaloids].filter(([, yomigana]) => yomigana.startsWith('ん')).length}</span
-			>対<span title="んで終わる曲"
-				>{[...vocaloids].filter(([, yomigana]) => yomigana.endsWith('ん')).length}</span
-			>曲）
-		</label>
-		<input type="checkbox" bind:checked={stripChouon} id="stripChouon" />
-		<label for="stripChouon"> 長音を取ります（オフの場合、母音の接続になります）</label>
-	</div>
-</fieldset>
+<Options bind:allowN bind:stripChouon />
