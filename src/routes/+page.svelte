@@ -19,7 +19,7 @@
 		<h2 class="text-lg">モードを選択してください</h2>
 
 		<button
-			class="rounded bg-blue-500 px-4 py-2 text-white"
+			class="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
 			onclick={() => {
 				gamemode = 'single';
 			}}
@@ -27,7 +27,7 @@
 			シングル
 		</button>
 		<button
-			class="rounded bg-purple-500 px-4 py-2 text-white"
+			class="rounded bg-purple-500 px-4 py-2 text-white hover:bg-purple-600"
 			onclick={() => {
 				gamemode = 'computer';
 			}}
