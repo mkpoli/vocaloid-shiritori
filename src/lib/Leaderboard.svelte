@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { Score } from '$lib/game';
 
-	let { scores }: { scores: Score[] } = $props();
+	let { scores, full = false }: { scores: Score[]; full?: boolean } = $props();
 </script>
 
 <ol class="mx-auto flex w-max flex-col gap-2">
-	{#each scores.slice(0, 10) as score, i}
+	{#each scores as score, i}
 		<li class="relative rounded py-3 pl-10 pr-4 drop-shadow-md" title={score.timestamp.toString()}>
 			<div>
 				{i + 1}. {score.username} - {score.score}
@@ -13,10 +13,13 @@
 		</li>
 	{/each}
 </ol>
-<a
-	href="/leaderboard"
-	class="text-sm text-gray-500 underline-offset-4 hover:text-gray-600 hover:underline">もっと見る</a
->
+{#if !full}
+	<a
+		href="/leaderboard"
+		class="text-sm text-gray-500 underline-offset-4 hover:text-gray-600 hover:underline"
+		>もっと見る</a
+	>
+{/if}
 
 <style lang="postcss">
 	li:nth-child(1) {

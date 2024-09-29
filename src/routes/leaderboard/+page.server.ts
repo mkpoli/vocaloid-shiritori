@@ -10,7 +10,7 @@ export const load: PageServerLoad = async ({ platform }) => {
 		throw new Error('DB not found');
 	}
 	const db = drizzle(DB);
-	const result = await db.select().from(scores).orderBy(desc(scores.score)).limit(10);
+	const result = await db.select().from(scores).orderBy(desc(scores.score)).limit(1000);
 	return {
 		scores: result
 	};
