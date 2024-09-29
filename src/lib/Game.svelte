@@ -24,6 +24,13 @@
 			console.log({ left, words });
 		});
 	}
+
+	let gameOver = $derived(left.length === 0);
+	$effect(() => {
+		if (gameOver) {
+			alert('ゲームオーバー');
+		}
+	});
 </script>
 
 {#if !words.length}
