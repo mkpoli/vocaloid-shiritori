@@ -67,11 +67,6 @@
 			console.info('Last word:', lastWord);
 		}
 
-		if (!(!lastWord || check(lastWord[0], word))) {
-			alert('その曲名はしりとりのルール違反です');
-			return;
-		}
-
 		const entry = find(vocaloids, word);
 		if (dev) {
 			console.info('Vocaloid entry:', entry);
@@ -82,6 +77,18 @@
 		}
 
 		const [yomigana, vocaloid] = entry;
+		if (
+			!(
+				!lastWord ||
+				check(lastWord[0], word) ||
+				check(lastWord[0], yomigana) ||
+				check(lastWord[0], vocaloid)
+			)
+		) {
+			alert('その曲名はしりとりのルール違反です');
+			return;
+		}
+
 		words.push([vocaloid, yomigana]);
 
 		// TODO: Better alert
