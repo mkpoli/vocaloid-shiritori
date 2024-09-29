@@ -199,13 +199,17 @@
 	><span class="text-xs text-gray-500">{left.length}曲</span>
 </form>
 
-<div>
-	<input type="checkbox" bind:checked={allowN} id="allowN" />
-	<label for="allowN"
-		>「ん」で終わることを許します（<span title="んで始まる曲"
-			>{[...vocaloids].filter(([, yomigana]) => yomigana.startsWith('ん')).length}</span
-		>対<span title="んで終わる曲"
-			>{[...vocaloids].filter(([, yomigana]) => yomigana.endsWith('ん')).length}</span
-		>曲）</label
-	>
-</div>
+<fieldset class="flex flex-col gap-2 rounded-md border p-2">
+	<legend class=" bg-white px-2 text-lg font-bold">ルール設定</legend>
+	<div>
+		<input type="checkbox" bind:checked={allowN} id="allowN" />
+		<label for="allowN">
+			「ん」で終わることを許します （<span title="んで始まる曲"
+				>{[...vocaloids].filter(([, yomigana]) => yomigana.startsWith('ん')).length}</span
+			>対
+			<span title="んで終わる曲"
+				>{[...vocaloids].filter(([, yomigana]) => yomigana.endsWith('ん')).length}</span
+			>曲）
+		</label>
+	</div>
+</fieldset>
