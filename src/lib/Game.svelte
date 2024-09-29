@@ -30,7 +30,11 @@
 	<button
 		class="bg-slate-500 text-white px-4 py-2 rounded-md hover:bg-slate-600"
 		onclick={() => {
-			words.push([...vocaloids][Math.floor(Math.random() * vocaloids.size)]);
+			words.push(
+				[...vocaloids].filter(([, yomigana]) => allowN || !yomigana.endsWith('ん'))[
+					Math.floor(Math.random() * vocaloids.size)
+				]
+			);
 		}}>ランダム・スタート</button
 	>
 {:else if words.length === 1}
