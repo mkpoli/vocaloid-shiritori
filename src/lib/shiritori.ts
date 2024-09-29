@@ -17,12 +17,21 @@ export function convertSmallKana(a: string): string {
 		.replace(/ゎ/g, 'わ');
 }
 
+/**
+ * しりとりのオプション
+ */
 export interface ShiritoriOptions {
+	/** 濁点を無視するかどうか */
 	ignoreDakuten: boolean;
+	/** 長音を取るかどうか */
 	stripChouon: boolean;
+	/** 「ん」で終わる単語を許可するかどうか */
 	allowN: boolean;
+	/** 「ぢ」「づ」を「じ」「ず」に変換するかどうか */
 	normalizeZiDiZuDu: boolean;
+	/** 「ゐ」「ゑ」「を」を「い」「え」「お」に変換するかどうか */
 	normalizeWiWeWo: boolean;
+	/** 「ぢ」「づ」を「じ」「ず」に変換するかどうか */
 	stripDiDuAsZiZu: boolean;
 }
 
@@ -30,19 +39,10 @@ export interface ShiritoriOptions {
  * しりとりをチェックする
  * @param a 前のワード
  * @param b 次のワード
- * @param ignoreDakuten 濁点を無視するかどうか（trueの場合は濁点を無視して例えば「さぎ」は「き」として扱う、falseの場合は「さぎ」は「ぎ」として扱う）
- * @param stripChouon 長音を取るかどうか（trueの場合は長音を無視して例えば「キー」は「き」として扱う、falseの場合は「キー」は「い」として扱う）
- * @param normalizeZiDiZuDu 「ぢ」「づ」を「じ」「ず」に変換するかどうか
- * @param normalizeWiWeWo 「ゐ」「ゑ」「を」を「い」「え」「お」に変換するかどうか
- * @param stripDiDuAsZiZu 「ぢ」「づ」を「じ」「ず」に変換するかどうか
+ * @param options オプション
  * @returns しりとりが成立しているかどうか
  */
-export function check(
-	a: string,
-	b: string,
-
-	options?: Partial<ShiritoriOptions>
-): boolean {
+export function check(a: string, b: string, options?: Partial<ShiritoriOptions>): boolean {
 	const {
 		ignoreDakuten = true,
 		stripChouon = true,
