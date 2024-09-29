@@ -4,6 +4,7 @@
 	import type { Gamemode } from '$lib/game';
 	import { find } from '$lib/vocaloid';
 	import { onMount } from 'svelte';
+	import Thinking from '$lib/Thinking.svelte';
 
 	const { vocaloids, gamemode }: { vocaloids: Map<string, string>; gamemode: Gamemode } = $props();
 	const segmenter = new Intl.Segmenter('ja', { granularity: 'grapheme' });
@@ -93,8 +94,12 @@
 			</ruby>
 		</li>
 	{/each}
+	{#if thinking}
+		<li>
+			<Thinking />
+		</li>
+	{/if}
 </ul>
-
 <form
 	class="flex items-center justify-center gap-2"
 	onsubmit={(e) => {
@@ -140,11 +145,14 @@
 
 		if (gamemode === 'computer') {
 			thinking = true;
-			setTimeout(() => {
+			setTimeout(
+				() => {
 				words.push(left[Math.floor(Math.random() * left.length)]);
 
 				thinking = false;
-			}, 1500);
+				},
+				1000 + Math.random() * 500
+			);
 		}
 
 		// TODO: Better alert
