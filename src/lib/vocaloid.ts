@@ -25,5 +25,7 @@ export async function load(): Promise<[string, string][]> {
  */
 export function find(map: Map<string, string>, word: string): [string, string] | undefined {
 	const normalized = normalize(word);
-	return [...map.entries()].find(([key, value]) => key === normalized || value === word);
+	return [...map.entries()].find(
+		([vocaloid, yomigana]) => yomigana === normalized || vocaloid === word
+	);
 }
