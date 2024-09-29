@@ -9,3 +9,10 @@ export const GAME_MODES = [
 	'together'
 ] as const;
 export type Gamemode = (typeof GAME_MODES)[number];
+
+export type Score = {
+	username: string;
+	score: number;
+	timestamp: number;
+	gamemode: Gamemode;
+};

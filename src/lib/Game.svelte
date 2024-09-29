@@ -66,42 +66,79 @@
 			}, 500);
 		}
 	});
+
+	let score = $derived(words.filter(([, , sender]) => sender === 'user').length * 10); // TODO: Advanced scoring based on rarity and time and etc.
+
+	async function uploadScore() {
+		const score = words.filter(([, , sender]) => sender === 'user').length * 10;
+
+		await fetch('/api/score', {
+			method: 'POST',
+			body: JSON.stringify({ score, username, mode: gamemode })
+		});
+	}
+
+	async function terminateGame() {
+		//  upload score
+		const score = words.filter(([, , sender]) => sender === 'user').length * 10;
+
+		await fetch('/api/score', {
+			method: 'POST',
+			body: JSON.stringify({ score, username, mode: gamemode })
+		});
+
+		location.reload();
+	}
 </script>
 
-{#if !words.length && gamemode === 'single'}
-	<button
-		class="rounded-md bg-slate-500 px-4 py-2 text-white hover:bg-slate-600"
-		onclick={() => {
-			words.push([
-				...[...vocaloids].filter(([, yomigana]) => allowN || !yomigana.endsWith('ん'))[
-					Math.floor(Math.random() * vocaloids.size)
-				],
-				'user'
-			]);
-		}}>ランダム・スタート</button
-	>
-{:else}
-	<button
-		class="rounded-md border border-red-500 bg-white px-4 py-2 text-red-500 hover:bg-red-500 hover:text-white"
-		onclick={() => {
-			words = [];
-			word = '';
-			if (gamemode === 'computer') {
-				thinking = true;
-				setTimeout(() => {
-					words.push([...left[Math.floor(Math.random() * left.length)], 'computer']);
-					thinking = false;
-				}, 500);
-			}
-		}}
-	>
-		{#if gamemode !== 'computer' && words.length === 1}
-			再スタート
-		{:else}
-			リセット
-		{/if}
-	</button>
-{/if}
+<div class="flex items-center justify-center gap-2">
+	{#if !words.length && gamemode === 'single'}
+		<button
+			class="rounded-md bg-slate-500 px-4 py-2 text-white hover:bg-slate-600"
+			onclick={() => {
+				words.push([
+					...[...vocaloids].filter(([, yomigana]) => allowN || !yomigana.endsWith('ん'))[
+						Math.floor(Math.random() * vocaloids.size)
+					],
+					'user'
+				]);
+			}}>ランダム・スタート</button
+		>
+	{:else}
+		<button
+			class="rounded-md border border-red-500 bg-white px-4 py-2 text-red-500 hover:bg-red-500 hover:text-white"
+			onclick={async () => {
+				await uploadScore();
+				words = [];
+				word = '';
+				if (gamemode === 'computer') {
+					thinking = true;
+					setTimeout(() => {
+						words.push([...left[Math.floor(Math.random() * left.length)], 'computer']);
+						thinking = false;
+					}, 500);
+				}
+			}}
+		>
+			{#if gamemode !== 'computer' && words.length === 1}
+				再スタート
+			{:else}
+				リセット
+			{/if}
+		</button>
+		<div>スコア: {score}</div>
+		<button
+			onclick={() => {
+				terminateGame();
+			}}
+			class="rounded-md border border-black bg-white px-4 py-2 text-black hover:bg-slate-900 hover:text-white"
+			title="ゲームを終了して、スコアをランキングに登録します"
+		>
+			<!-- TODO: （5曲以上の場合） -->
+			ゲーム終了
+		</button>
+	{/if}
+</div>
 
 <WordList {words} {gamemode} {thinking} />
 
