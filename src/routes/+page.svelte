@@ -1,8 +1,9 @@
 <script lang="ts">
-	import type { Gamemode } from '$lib/game';
+	import type { Gamemode, Score } from '$lib/game';
 	import Game from '$lib/Game.svelte';
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
+	import Leaderboard from '$lib/Leaderboard.svelte';
 
 	const { data }: { data: PageData } = $props();
 
@@ -44,7 +45,7 @@
 	{#if gamemode}
 		<Game vocaloids={data.vocaloids} {gamemode} {username} />
 	{:else}
-		<h2 class="text-lg">ユーザー名</h2>
+		<h2 class="text-lg font-bold">ユーザー名</h2>
 		<input
 			type="text"
 			bind:value={username}
@@ -54,7 +55,7 @@
 				e.currentTarget.setSelectionRange(0, e.currentTarget.value.length);
 			}}
 		/>
-		<h2 class="text-lg">モードを選択してください</h2>
+		<h2 class="text-lg font-bold">モード選択</h2>
 
 		<button
 			class="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
@@ -77,4 +78,16 @@
 		</button>
 		<button class="rounded bg-gray-500 px-4 py-2 text-white" disabled> マルチ（準備中） </button>
 	{/if}
+
+	<h2 class="text-lg font-bold">ランキング</h2>
+	{#key gamemode}
+		<Leaderboard
+			scores={data.scores.map(({ mode, username, score, createdAt }) => ({
+				gamemode: mode,
+				username,
+				score,
+				timestamp: createdAt
+			})) as Score[]}
+		/>
+	{/key}
 </main>
