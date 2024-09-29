@@ -22,6 +22,16 @@
 			words.push([...vocaloids][Math.floor(Math.random() * vocaloids.size)]);
 		}}>ランダム・スタート</button
 	>
+{:else if words.length === 1}
+	<button
+		class="bg-white text-red-500 px-4 py-2 rounded-md hover:bg-red-500 hover:text-white border-red-500 border-2"
+		onclick={() => {
+			words = [];
+			word = '';
+		}}
+	>
+		再スタート
+	</button>
 {/if}
 
 <ul class="list-disc list-inside">
