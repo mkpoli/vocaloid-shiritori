@@ -9,12 +9,13 @@
 
 	let word = $state('');
 	let words: [vocaloid: string, yomigana: string][] = $state([]);
+	let allowN = $state(false);
 
 	const left = $derived(
 		[...vocaloids]
 			.filter(([, yomigana]) => yomigana.startsWith(words.at(-1)?.at(-1)?.at(-1) ?? ''))
 			.filter(([vocaloid]) => !words.some(([v]) => v === vocaloid))
-			.filter(([, yomigana]) => !yomigana.endsWith('ん'))
+			.filter(([, yomigana]) => allowN || !yomigana.endsWith('ん'))
 	);
 
 	if (dev) {
@@ -94,9 +95,15 @@
 		if (
 			!(
 				!lastWord ||
-				check(lastWord[0], word) ||
-				check(lastWord[0], yomigana) ||
-				check(lastWord[0], vocaloid)
+				check(lastWord[0], word, {
+					allowN
+				}) ||
+				check(lastWord[0], yomigana, {
+					allowN
+				}) ||
+				check(lastWord[0], vocaloid, {
+					allowN
+				})
 			)
 		) {
 			alert('その曲名はしりとりのルール違反です');
@@ -120,3 +127,14 @@
 		>追加</button
 	><span class="text-gray-500 text-xs">{left.length}曲</span>
 </form>
+
+<div>
+	<input type="checkbox" bind:checked={allowN} id="allowN" />
+	<label for="allowN"
+		>「ん」で終わることを許します（<span title="んで始まる曲"
+			>{[...vocaloids].filter(([, yomigana]) => yomigana.startsWith('ん')).length}</span
+		>対<span title="んで終わる曲"
+			>{[...vocaloids].filter(([, yomigana]) => yomigana.endsWith('ん')).length}</span
+		>曲）</label
+	>
+</div>
