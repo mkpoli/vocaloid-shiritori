@@ -8,27 +8,47 @@
 		console.log({ vocaloids });
 	}
 
-  const segmenter = new Intl.Segmenter('ja', { granularity: 'grapheme' });
+	const segmenter = new Intl.Segmenter('ja', { granularity: 'grapheme' });
 
 	let word = $state('');
 	let words: [vocaloid: string, yomigana: string][] = $state([]);
 </script>
 
+{#if !words.length}
+	<button
+		class="bg-slate-500 text-white px-4 py-2 rounded-md hover:bg-slate-600"
+		onclick={() => {
+			const randomVocaloid = vocaloids.get(
+				Array.from(vocaloids.keys())[Math.floor(Math.random() * vocaloids.size)]
+			);
+			if (randomVocaloid) {
+				words.push([randomVocaloid, normalize(randomVocaloid)]);
+			}
+		}}>ランダム・スタート</button
+	>
+{/if}
+
 <ul class="list-disc list-inside">
 	{#each words as [vocaloid, yomigana]}
 		<li>
-      <ruby class="inline-flex">
-        {vocaloid}
-        <rt class="text-gray-400">
-          {@html [...segmenter.segment(yomigana)].map(({ segment }, i, arr) => i === arr.length - 1 ? `<span class="text-gray-500 font-bold">${segment}</span>` : segment).join('')}
-        </rt>
-      </ruby>
+			<ruby class="inline-flex">
+				{vocaloid}
+				<rt class="text-gray-400">
+					{@html [...segmenter.segment(yomigana)]
+						.map(({ segment }, i, arr) =>
+							i === arr.length - 1
+								? `<span class="text-gray-500 font-bold">${segment}</span>`
+								: segment
+						)
+						.join('')}
+				</rt>
+			</ruby>
 		</li>
 	{/each}
 </ul>
 
 <form
-  class="flex gap-2 items-center justify-center"
+	class="flex gap-2 items-center justify-center"
 	onsubmit={(e) => {
 		e.preventDefault();
 
@@ -70,6 +90,13 @@
 		word = '';
 	}}
 >
-	<input type="text" bind:value={word} placeholder="ボカロ曲名を入力してください" class="border border-gray-300 rounded-md p-2" />
-	<button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">追加</button>
+	<input
+		type="text"
+		bind:value={word}
+		placeholder="ボカロ曲名を入力してください"
+		class="border border-gray-300 rounded-md p-2"
+	/>
+	<button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+		>追加</button
+	>
 </form>
