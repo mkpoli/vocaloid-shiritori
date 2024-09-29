@@ -32,9 +32,7 @@
 
 	if (dev) {
 		console.log({ vocaloids });
-		$effect(() => {
-			console.log({ left, words });
-		});
+		$inspect(left);
 	}
 
 	let gameOver = $derived(left.length === 0);
@@ -46,7 +44,11 @@
 
 	onMount(() => {
 		if (gamemode === 'computer') {
-			words.push(left[Math.floor(Math.random() * left.length)]);
+			thinking = true;
+			setTimeout(() => {
+				words.push(left[Math.floor(Math.random() * left.length)]);
+				thinking = false;
+			}, 500);
 		}
 	});
 </script>
@@ -68,6 +70,13 @@
 		onclick={() => {
 			words = [];
 			word = '';
+			if (gamemode === 'computer') {
+				thinking = true;
+				setTimeout(() => {
+					words.push(left[Math.floor(Math.random() * left.length)]);
+					thinking = false;
+				}, 500);
+			}
 		}}
 	>
 		{#if gamemode !== 'computer' && words.length === 1}
@@ -147,9 +156,9 @@
 			thinking = true;
 			setTimeout(
 				() => {
-				words.push(left[Math.floor(Math.random() * left.length)]);
+					words.push(left[Math.floor(Math.random() * left.length)]);
 
-				thinking = false;
+					thinking = false;
 				},
 				1000 + Math.random() * 500
 			);
