@@ -7,7 +7,11 @@
 	import Options from '$lib/game/Options.svelte';
 	import WordList from './game/WordList.svelte';
 
-	const { vocaloids, gamemode }: { vocaloids: Map<string, string>; gamemode: Gamemode } = $props();
+	const {
+		vocaloids,
+		gamemode,
+		username
+	}: { vocaloids: Map<string, string>; gamemode: Gamemode; username: string } = $props();
 
 	setContext('vocaloids', vocaloids);
 
