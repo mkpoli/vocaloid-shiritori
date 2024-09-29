@@ -19,12 +19,7 @@
 	<button
 		class="bg-slate-500 text-white px-4 py-2 rounded-md hover:bg-slate-600"
 		onclick={() => {
-			const randomVocaloid = vocaloids.get(
-				Array.from(vocaloids.keys())[Math.floor(Math.random() * vocaloids.size)]
-			);
-			if (randomVocaloid) {
-				words.push([randomVocaloid, normalize(randomVocaloid)]);
-			}
+			words.push([...vocaloids][Math.floor(Math.random() * vocaloids.size)]);
 		}}>ランダム・スタート</button
 	>
 {/if}
