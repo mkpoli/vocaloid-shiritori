@@ -10,7 +10,8 @@ export async function load(): Promise<[string, string][]> {
 	return (await Promise.all([FANDOM, HMIKU].map(async (url) => (await fetch(url)).text())))
 		.flatMap((data) => data.split('\n').map((line) => line.split(',')))
 		.map((data) => (data.length === 3 ? [data[1], data[2]] : [data[0], data[1]]))
-		.map(([vocaloid, yomigana]) => [yomigana, vocaloid]);
+		.map(([vocaloid, yomigana]) => [yomigana, vocaloid] as [string, string])
+		.filter(([yomigana]) => yomigana);
 	// TODO: dedupe
 }
 
