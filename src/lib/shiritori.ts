@@ -70,12 +70,12 @@ export function check(
 		} as const;
 
 		lastCharA = ZI_DI_ZU_DU[lastCharA as keyof typeof ZI_DI_ZU_DU] || lastCharA;
-    firstCharB = ZI_DI_ZU_DU[firstCharB as keyof typeof ZI_DI_ZU_DU] || firstCharB;
+		firstCharB = ZI_DI_ZU_DU[firstCharB as keyof typeof ZI_DI_ZU_DU] || firstCharB;
 
-    if (stripDiDuAsZiZu && ignoreDakuten) {
-      lastCharA = toSeion(lastCharA);
-      firstCharB = toSeion(firstCharB);
-    }
+		if (stripDiDuAsZiZu && ignoreDakuten) {
+			lastCharA = toSeion(lastCharA);
+			firstCharB = toSeion(firstCharB);
+		}
 	}
 
 	if (normalizeWiWeWo) {
@@ -92,15 +92,10 @@ export function check(
 }
 
 /**
- * ボカロ曲名のマップに曲名が存在するかどうかをチェックする
- * @param map ボカロ曲名のマップ
+ * 曲名を正規化する
  * @param word 曲名
- * @returns 曲名がマップに存在するかどうか
+ * @returns 正規化された曲名
  */
-export function checkInMap(map: Map<string, string>, word: string): boolean {
-  return map.has(toHiragana(word));
-}
-
 export function normalize(word: string): string {
-  return toHiragana(word);
+	return toHiragana(word);
 }

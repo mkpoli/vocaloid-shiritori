@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
-	import { check, checkInMap, normalize } from '$lib/shiritori';
+	import { check, normalize } from '$lib/shiritori';
+	import { find } from './vocaloid';
 
 	const { vocaloids }: { vocaloids: Map<string, string> } = $props();
 
@@ -71,19 +72,17 @@
 			return;
 		}
 
-		if (!checkInMap(vocaloids, word)) {
+		const entry = find(vocaloids, word);
+		if (dev) {
+			console.info('Vocaloid entry:', entry);
+		}
+		if (!entry) {
 			alert('その曲名は存在しません');
 			return;
 		}
 
-		if (dev) {
-			console.info('Vocaloid:', vocaloids.get(normalize(word)));
-		}
-
-		const vocaloid = vocaloids.get(normalize(word));
-		if (vocaloid) {
-			words.push([vocaloid, normalize(word)]);
-		}
+		const [yomigana, vocaloid] = entry;
+		words.push([vocaloid, yomigana]);
 
 		// TODO: Better alert
 		// TODO: Show error type and context
