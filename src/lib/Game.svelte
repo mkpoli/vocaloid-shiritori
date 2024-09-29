@@ -4,7 +4,6 @@
 	import { find } from './vocaloid';
 
 	const { vocaloids }: { vocaloids: Map<string, string> } = $props();
-
 	const segmenter = new Intl.Segmenter('ja', { granularity: 'grapheme' });
 
 	let word = $state('');
@@ -12,10 +11,19 @@
 	let allowN = $state(false);
 
 	const left = $derived(
-		[...vocaloids]
-			.filter(([, yomigana]) => yomigana.startsWith(words.at(-1)?.at(-1)?.at(-1) ?? ''))
-			.filter(([vocaloid]) => !words.some(([v]) => v === vocaloid))
-			.filter(([, yomigana]) => allowN || !yomigana.endsWith('ん'))
+		words.length == 0
+			? [...vocaloids]
+			: [...vocaloids]
+					.filter(([vocaloid, yomigana]) => {
+						const lastYomigana = words.at(-1)?.at(-1);
+						if (!lastYomigana) {
+							return true;
+						}
+						const nextChar = lastYomigana.at(indexNextChar(lastYomigana, true)) ?? '';
+						return yomigana.startsWith(nextChar) || vocaloid.startsWith(nextChar);
+					})
+					.filter(([vocaloid]) => !words.some(([v]) => v === vocaloid))
+					.filter(([, yomigana]) => allowN || !yomigana.endsWith('ん'))
 	);
 
 	if (dev) {
