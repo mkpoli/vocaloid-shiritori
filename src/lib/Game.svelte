@@ -1,18 +1,26 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
-	import { check, normalize, indexNextChar } from '$lib/shiritori';
+	import { check, indexNextChar } from '$lib/shiritori';
 	import { find } from './vocaloid';
 
 	const { vocaloids }: { vocaloids: Map<string, string> } = $props();
-
-	if (dev) {
-		console.log({ vocaloids });
-	}
 
 	const segmenter = new Intl.Segmenter('ja', { granularity: 'grapheme' });
 
 	let word = $state('');
 	let words: [vocaloid: string, yomigana: string][] = $state([]);
+
+	const left = $derived(
+		[...vocaloids].filter(([, yomigana]) => yomigana.startsWith(words.at(-1)?.at(-1)?.at(-1) ?? ''))
+		// .filter(([vocaloid]) => !words.some(([v]) => v === vocaloid))
+	);
+
+	if (dev) {
+		console.log({ vocaloids });
+		$effect(() => {
+			console.log({ left, words });
+		});
+	}
 </script>
 
 {#if !words.length}
@@ -108,5 +116,5 @@
 	/>
 	<button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
 		>追加</button
-	>
+	><span class="text-gray-500 text-xs">{left.length}曲</span>
 </form>
