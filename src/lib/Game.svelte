@@ -10,7 +10,7 @@
 	const segmenter = new Intl.Segmenter('ja', { granularity: 'grapheme' });
 
 	let word = $state('');
-	let words: [vocaloid: string, yomigana: string][] = $state([]);
+	let words: [vocaloid: string, yomigana: string, sender: 'user' | 'computer'][] = $state([]);
 	let allowN = $state(false);
 	let thinking = $state(false);
 
@@ -19,7 +19,7 @@
 			? [...vocaloids]
 			: [...vocaloids]
 					.filter(([vocaloid, yomigana]) => {
-						const lastYomigana = words.at(-1)?.at(-1);
+						const lastYomigana = words.at(-1)?.[1];
 						if (!lastYomigana) {
 							return true;
 						}
@@ -32,7 +32,15 @@
 
 	if (dev) {
 		console.log({ vocaloids });
-		$inspect(left);
+		$effect(() => {
+			console.log('left', left.length);
+			if (words.length) {
+				const shuffledVocaloids = [...left].sort(() => Math.random() - 0.5);
+				for (const [v, y] of shuffledVocaloids) {
+					console.log(`${v}（${y}）`);
+				}
+			}
+		});
 	}
 
 	let gameOver = $derived(left.length === 0);
@@ -46,7 +54,7 @@
 		if (gamemode === 'computer') {
 			thinking = true;
 			setTimeout(() => {
-				words.push(left[Math.floor(Math.random() * left.length)]);
+				words.push([...left[Math.floor(Math.random() * left.length)], 'computer']);
 				thinking = false;
 			}, 500);
 		}
@@ -57,11 +65,12 @@
 	<button
 		class="rounded-md bg-slate-500 px-4 py-2 text-white hover:bg-slate-600"
 		onclick={() => {
-			words.push(
-				[...vocaloids].filter(([, yomigana]) => allowN || !yomigana.endsWith('ん'))[
+			words.push([
+				...[...vocaloids].filter(([, yomigana]) => allowN || !yomigana.endsWith('ん'))[
 					Math.floor(Math.random() * vocaloids.size)
-				]
-			);
+				],
+				'user'
+			]);
 		}}>ランダム・スタート</button
 	>
 {:else}
@@ -73,7 +82,7 @@
 			if (gamemode === 'computer') {
 				thinking = true;
 				setTimeout(() => {
-					words.push(left[Math.floor(Math.random() * left.length)]);
+					words.push([...left[Math.floor(Math.random() * left.length)], 'computer']);
 					thinking = false;
 				}, 500);
 			}
@@ -87,11 +96,19 @@
 	</button>
 {/if}
 
-<ul class="mx-auto w-max list-inside list-disc text-left">
-	{#each words as [vocaloid, yomigana]}
+<ul class="mx-auto flex w-full list-inside flex-col items-center justify-start gap-2">
+	{#each words as [vocaloid, yomigana, sender]}
 		{@const index = indexNextChar(yomigana)}
-		<li>
-			<ruby class="inline-flex">
+		<li
+			class="w-max rounded-md p-2 shadow-sm"
+			class:self-start={gamemode !== 'single' && sender === 'computer'}
+			class:bg-blue-50={gamemode !== 'single' && sender === 'computer'}
+			class:self-end={gamemode !== 'single' && sender === 'user'}
+			class:bg-green-50={gamemode !== 'single' && sender === 'user'}
+			class:self-center={gamemode === 'single'}
+			class:bg-gray-50={gamemode === 'single'}
+		>
+			<ruby class="inline-flex gap-1 self-end">
 				{vocaloid}
 				<rt class="text-gray-400">
 					{@html [...segmenter.segment(yomigana)]
@@ -104,7 +121,7 @@
 		</li>
 	{/each}
 	{#if thinking}
-		<li>
+		<li class="w-max rounded-md p-2 shadow-sm">
 			<Thinking />
 		</li>
 	{/if}
@@ -139,7 +156,7 @@
 
 		const [vocaloid, yomigana] = entry;
 
-		switch (check(lastWord?.at(-1) ?? '', yomigana, { allowN })) {
+		switch (check(lastWord?.[1] ?? '', yomigana, { allowN })) {
 			case 'valid':
 				break;
 			case 'trailing-n':
@@ -150,13 +167,13 @@
 				return;
 		}
 
-		words.push([vocaloid, yomigana]);
+		words.push([vocaloid, yomigana, 'user']);
 
 		if (gamemode === 'computer') {
 			thinking = true;
 			setTimeout(
 				() => {
-					words.push(left[Math.floor(Math.random() * left.length)]);
+					words.push([...left[Math.floor(Math.random() * left.length)], 'computer']);
 
 					thinking = false;
 				},
