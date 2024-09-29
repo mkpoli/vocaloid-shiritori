@@ -26,7 +26,7 @@
 						if (!lastYomigana) {
 							return true;
 						}
-						const nextChar = getNextChar(lastYomigana, allowN);
+						const nextChar = getNextChar(lastYomigana, stripChouon);
 						return yomigana.startsWith(nextChar) || vocaloid.startsWith(nextChar);
 					})
 					.filter(([vocaloid]) => !words.some(([v]) => v === vocaloid))

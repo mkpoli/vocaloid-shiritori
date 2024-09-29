@@ -130,13 +130,93 @@ export function check(
  * @returns 次の文字の位置
  */
 export function indexNextChar(word: string, stripChouon: boolean = true): number {
-	// const normalized = normalize(word);
-	if (stripChouon && word.endsWith('ー')) {
-		return word.replace(/ー+$/, '').length - 1;
+	let index = word.length - 1;
+
+	while (/\p{Punctuation}$/u.test(word.at(index) ?? '')) {
+		index--;
 	}
 
-	return word.length - 1;
+	// const normalized = normalize(word);
+
+	if (stripChouon && word.endsWith('ー')) {
+		while (word.at(index) === 'ー') {
+			if (index === 0) {
+				break;
+			}
+			index--;
+		}
+	}
+
+	return index;
 }
+
+const GOUJUON_TO_VOWEL = {
+	か: 'あ',
+	き: 'い',
+	く: 'う',
+	け: 'え',
+	こ: 'お',
+	が: 'あ',
+	ぎ: 'い',
+	ぐ: 'う',
+	げ: 'え',
+	ご: 'お',
+	さ: 'あ',
+	し: 'い',
+	す: 'う',
+	せ: 'え',
+	そ: 'お',
+	ざ: 'あ',
+	じ: 'い',
+	ず: 'う',
+	ぜ: 'え',
+	ぞ: 'お',
+	た: 'あ',
+	ち: 'い',
+	つ: 'う',
+	て: 'え',
+	と: 'お',
+	だ: 'あ',
+	ぢ: 'い',
+	づ: 'う',
+	で: 'え',
+	ど: 'お',
+	な: 'あ',
+	に: 'い',
+	ぬ: 'う',
+	ね: 'え',
+	の: 'お',
+	は: 'あ',
+	ひ: 'い',
+	ふ: 'う',
+	へ: 'え',
+	ほ: 'お',
+	ぱ: 'あ',
+	ぴ: 'い',
+	ぷ: 'う',
+	ぺ: 'え',
+	ぽ: 'お',
+	ば: 'あ',
+	び: 'い',
+	ぶ: 'う',
+	べ: 'え',
+	ぼ: 'お',
+	ま: 'あ',
+	み: 'い',
+	む: 'う',
+	め: 'え',
+	も: 'お',
+	や: 'あ',
+	ゆ: 'い',
+	よ: 'お',
+	ら: 'あ',
+	り: 'い',
+	る: 'う',
+	れ: 'え',
+	ろ: 'お',
+	わ: 'あ',
+	ゔ: 'あ'
+};
 
 /**
  * 単語の次のしりとり文字を取得する
@@ -145,7 +225,17 @@ export function indexNextChar(word: string, stripChouon: boolean = true): number
  * @returns 次の文字
  */
 export function getNextChar(word: string, stripChouon: boolean = true): string {
-	return convertSmallKana(word.at(indexNextChar(word, stripChouon)) ?? '');
+	let nextCharIndex = indexNextChar(word, stripChouon);
+	let nextChar = word.at(nextCharIndex);
+	if (nextChar === 'ー') {
+		while (word.at(nextCharIndex) === 'ー') {
+			nextCharIndex--;
+		}
+		nextChar =
+			GOUJUON_TO_VOWEL[word.at(nextCharIndex) as keyof typeof GOUJUON_TO_VOWEL] ??
+			word.at(nextCharIndex);
+	}
+	return convertSmallKana(nextChar ?? '');
 }
 
 /**

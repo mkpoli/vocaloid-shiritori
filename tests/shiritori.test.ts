@@ -1,6 +1,5 @@
 import { expect, test, describe } from 'bun:test';
-import { indexNextChar } from '../src/lib/shiritori';
-import { check, convertSmallKana } from '$lib/shiritori';
+import { check, convertSmallKana, indexNextChar, getNextChar } from '$lib/shiritori';
 
 describe('convertSmallKana', () => {
 	test('should convert small kana', () => {
@@ -121,12 +120,84 @@ describe('indexNextChar', () => {
 		expect(indexNextChar('キャリーーー', false)).toBe(5);
 	});
 
+	test('handles words ending with punctuation', () => {
+		expect(indexNextChar('あいうえお。')).toBe(4);
+	});
+
 	test('handles single character words', () => {
 		expect(indexNextChar('あ')).toBe(0);
-		expect(indexNextChar('ー')).toBe(-1); // TODO: ここは0でいいのか？
+		expect(indexNextChar('ー')).toBe(0);
 	});
 
 	test('handles empty strings', () => {
 		expect(indexNextChar('')).toBe(-1);
+	});
+});
+
+describe('getNextChar', () => {
+	test('returns last character for normal words', () => {
+		expect(getNextChar('さくら')).toBe('ら');
+		expect(getNextChar('あいうえお')).toBe('お');
+		expect(getNextChar('ボカロ')).toBe('ろ');
+	});
+
+	test('handles words ending with chouon when stripChouon is true (default)', () => {
+		expect(getNextChar('メロディー')).toBe('い');
+		expect(getNextChar('パーティー')).toBe('い');
+		expect(getNextChar('スマートフォン')).toBe('ん');
+	});
+
+	test('handles words ending with chouon when stripChouon is false', () => {
+		expect(getNextChar('メロディー', false)).toBe('ー');
+		expect(getNextChar('パーティー', false)).toBe('ー');
+		expect(getNextChar('スマートフォン', false)).toBe('ん');
+	});
+
+	test('handles words with multiple chouon at the end', () => {
+		expect(getNextChar('キャリーーー')).toBe('い');
+		expect(getNextChar('キャリーーー', false)).toBe('ー');
+	});
+
+	test('handles single character words', () => {
+		expect(getNextChar('あ')).toBe('あ');
+		expect(getNextChar('ー')).toBe('');
+	});
+
+	test('handles words with chouon in the middle', () => {
+		expect(getNextChar('カーテン')).toBe('ん');
+		expect(getNextChar('スーパー')).toBe('あ');
+	});
+
+	test('handles empty strings', () => {
+		expect(getNextChar('')).toBe('');
+	});
+
+	test('handles words with small kana', () => {
+		expect(getNextChar('きゃ')).toBe('や');
+		expect(getNextChar('しゅ')).toBe('う');
+		expect(getNextChar('ちょ')).toBe('よ');
+	});
+
+	test('handles words ending with small kana', () => {
+		expect(getNextChar('いぇーい')).toBe('い');
+		expect(getNextChar('ウォッチ')).toBe('ち');
+	});
+
+	test('handles words with non-Japanese characters', () => {
+		expect(getNextChar('Hello')).toBe('o');
+		expect(getNextChar('ハローWorld')).toBe('d');
+	});
+
+	test('handles words with Japanese punctuation', () => {
+		expect(getNextChar('こんにちは。')).toBe('は');
+		expect(getNextChar('さようなら！')).toBe('ら');
+	});
+
+	test('handles words ending with different vowels followed by chouon', () => {
+		expect(getNextChar('トマトー')).toBe('お');
+		expect(getNextChar('カレー')).toBe('え');
+		expect(getNextChar('パーティー')).toBe('い');
+		expect(getNextChar('ドアー')).toBe('あ');
+		expect(getNextChar('シチュー')).toBe('う');
 	});
 });
