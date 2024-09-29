@@ -127,6 +127,16 @@ export function indexNextChar(word: string, stripChouon: boolean = true): number
 }
 
 /**
+ * 単語の次のしりとり文字を取得する
+ * @param word 単語
+ * @param stripChouon 長音を取るかどうか
+ * @returns 次の文字
+ */
+export function getNextChar(word: string, stripChouon: boolean = true): string {
+	return convertSmallKana(word.at(indexNextChar(word, stripChouon)) ?? '');
+}
+
+/**
  * 曲名を正規化する
  * @param word 曲名
  * @returns 正規化された曲名

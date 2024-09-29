@@ -1,14 +1,17 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
-	import { check, indexNextChar } from '$lib/shiritori';
-	import { find } from './vocaloid';
+	import { check, getNextChar, indexNextChar } from '$lib/shiritori';
+	import type { Gamemode } from '$lib/game';
+	import { find } from '$lib/vocaloid';
+	import { onMount } from 'svelte';
 
-	const { vocaloids }: { vocaloids: Map<string, string> } = $props();
+	const { vocaloids, gamemode }: { vocaloids: Map<string, string>; gamemode: Gamemode } = $props();
 	const segmenter = new Intl.Segmenter('ja', { granularity: 'grapheme' });
 
 	let word = $state('');
 	let words: [vocaloid: string, yomigana: string][] = $state([]);
 	let allowN = $state(false);
+	let thinking = $state(false);
 
 	const left = $derived(
 		words.length == 0
@@ -19,7 +22,7 @@
 						if (!lastYomigana) {
 							return true;
 						}
-						const nextChar = lastYomigana.at(indexNextChar(lastYomigana, true)) ?? '';
+						const nextChar = getNextChar(lastYomigana, allowN);
 						return yomigana.startsWith(nextChar) || vocaloid.startsWith(nextChar);
 					})
 					.filter(([vocaloid]) => !words.some(([v]) => v === vocaloid))
@@ -39,11 +42,17 @@
 			alert('ゲームオーバー');
 		}
 	});
+
+	onMount(() => {
+		if (gamemode === 'computer') {
+			words.push(left[Math.floor(Math.random() * left.length)]);
+		}
+	});
 </script>
 
-{#if !words.length}
+{#if !words.length && gamemode === 'single'}
 	<button
-		class="bg-slate-500 text-white px-4 py-2 rounded-md hover:bg-slate-600"
+		class="rounded-md bg-slate-500 px-4 py-2 text-white hover:bg-slate-600"
 		onclick={() => {
 			words.push(
 				[...vocaloids].filter(([, yomigana]) => allowN || !yomigana.endsWith('ん'))[
@@ -54,13 +63,13 @@
 	>
 {:else}
 	<button
-		class="bg-white text-red-500 px-4 py-2 rounded-md hover:bg-red-500 hover:text-white border-red-500 border-2"
+		class="rounded-md border-2 border-red-500 bg-white px-4 py-2 text-red-500 hover:bg-red-500 hover:text-white"
 		onclick={() => {
 			words = [];
 			word = '';
 		}}
 	>
-		{#if words.length === 1}
+		{#if gamemode !== 'computer' && words.length === 1}
 			再スタート
 		{:else}
 			リセット
@@ -68,7 +77,7 @@
 	</button>
 {/if}
 
-<ul class="list-disc list-inside text-left w-max mx-auto">
+<ul class="mx-auto w-max list-inside list-disc text-left">
 	{#each words as [vocaloid, yomigana]}
 		{@const index = indexNextChar(yomigana)}
 		<li>
@@ -87,7 +96,7 @@
 </ul>
 
 <form
-	class="flex gap-2 items-center justify-center"
+	class="flex items-center justify-center gap-2"
 	onsubmit={(e) => {
 		e.preventDefault();
 
@@ -129,6 +138,15 @@
 
 		words.push([vocaloid, yomigana]);
 
+		if (gamemode === 'computer') {
+			thinking = true;
+			setTimeout(() => {
+				words.push(left[Math.floor(Math.random() * left.length)]);
+
+				thinking = false;
+			}, 1500);
+		}
+
 		// TODO: Better alert
 		// TODO: Show error type and context
 		word = '';
@@ -138,11 +156,13 @@
 		type="text"
 		bind:value={word}
 		placeholder="ボカロ曲名を入力してください"
-		class="border border-gray-300 rounded-md p-2"
+		class="rounded-md border border-gray-300 p-2"
 	/>
-	<button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-		>追加</button
-	><span class="text-gray-500 text-xs">{left.length}曲</span>
+	<button
+		type="submit"
+		class="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+		disabled={thinking}>追加</button
+	><span class="text-xs text-gray-500">{left.length}曲</span>
 </form>
 
 <div>
