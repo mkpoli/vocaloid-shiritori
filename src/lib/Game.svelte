@@ -53,14 +53,14 @@
 		}}
 	>
 		{#if words.length === 1}
-		再スタート
+			再スタート
 		{:else}
 			リセット
 		{/if}
 	</button>
 {/if}
 
-<ul class="list-disc list-inside">
+<ul class="list-disc list-inside text-left w-max mx-auto">
 	{#each words as [vocaloid, yomigana]}
 		{@const index = indexNextChar(yomigana)}
 		<li>
