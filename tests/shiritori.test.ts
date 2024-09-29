@@ -20,83 +20,83 @@ describe('convertSmallKana', () => {
 
 describe('check', () => {
 	test('basic matching', () => {
-		expect(check('さくら', 'らっぱ')).toBe(true);
-		expect(check('さくら', 'あめ')).toBe(false);
+		expect(check('さくら', 'らっぱ')).toBe('valid');
+		expect(check('さくら', 'あめ')).toBe('invalid');
 	});
 
 	test('hiragana and katakana conversion', () => {
-		expect(check('サクラ', 'ラッパ')).toBe(true);
-		expect(check('さくら', 'ラッパ')).toBe(true);
+		expect(check('サクラ', 'ラッパ')).toBe('valid');
+		expect(check('さくら', 'ラッパ')).toBe('valid');
 	});
 
 	test('ignoring dakuten', () => {
-		expect(check('まど', 'とんぼ')).toBe(true);
-		expect(check('まど', 'どんぶり')).toBe(true);
+		expect(check('まど', 'とんぼ')).toBe('valid');
+		expect(check('まど', 'どんぶり')).toBe('valid');
 	});
 
 	test('respecting dakuten', () => {
-		expect(check('まど', 'とんぼ', { ignoreDakuten: false })).toBe(false);
-		expect(check('まど', 'どんぶり', { ignoreDakuten: false })).toBe(true);
+		expect(check('まど', 'とんぼ', { ignoreDakuten: false })).toBe('invalid');
+		expect(check('まど', 'どんぶり', { ignoreDakuten: false })).toBe('valid');
 	});
 
 	test('stripping chouon', () => {
-		expect(check('かー', 'かかと')).toBe(true);
-		expect(check('スター', 'たそがれ')).toBe(true);
-		expect(check('パーティー', 'いカメラ')).toBe(true);
+		expect(check('かー', 'かかと')).toBe('valid');
+		expect(check('スター', 'たそがれ')).toBe('valid');
+		expect(check('パーティー', 'いカメラ')).toBe('valid');
 	});
 
 	test('respecting chouon', () => {
-		expect(check('かー', 'アート', { stripChouon: false })).toBe(false);
-		expect(check('スター', 'アーム', { stripChouon: false })).toBe(true);
-		expect(check('パーティー', 'いカメラ', { stripChouon: false })).toBe(true);
+		expect(check('かー', 'アート', { stripChouon: false })).toBe('invalid');
+		expect(check('スター', 'アーム', { stripChouon: false })).toBe('valid');
+		expect(check('パーティー', 'いカメラ', { stripChouon: false })).toBe('valid');
 	});
 
 	test('converting small kana', () => {
-		expect(check('きゃべつ', 'つばさ')).toBe(true);
-		expect(check('きゃべつ', 'やま')).toBe(false);
+		expect(check('きゃべつ', 'つばさ')).toBe('valid');
+		expect(check('きゃべつ', 'やま')).toBe('invalid');
 	});
 
 	test('normalizing zi, di, zu, du', () => {
-		expect(check('はなぢ', 'じてんしゃ')).toBe(false);
-		expect(check('はなぢ', 'ぢめん')).toBe(false);
+		expect(check('はなぢ', 'ぢらい')).toBe('valid');
+		expect(check('はなぢ', 'じてんしゃ')).toBe('invalid');
 
-		expect(check('つづ', 'づうち')).toBe(true);
-		expect(check('つづ', 'ずうち')).toBe(false);
+		expect(check('つづ', 'づうち')).toBe('valid');
+		expect(check('つづ', 'ずうち')).toBe('invalid');
 	});
 
 	test('stripping di, du as si, su', () => {
-		expect(check('まぢ', 'しま', { stripDiDuAsZiZu: true })).toBe(true);
-		expect(check('まづ', 'ずい', { stripDiDuAsZiZu: true })).toBe(true);
+		expect(check('まぢ', 'しま', { stripDiDuAsZiZu: true })).toBe('valid');
+		expect(check('まづ', 'ずい', { stripDiDuAsZiZu: true })).toBe('valid');
 	});
 
 	test('normalizing wi, we, wo', () => {
-		expect(check('かゐ', 'ゐるす')).toBe(true);
-		expect(check('しづゑ', 'えんと')).toBe(true);
+		expect(check('かゐ', 'ゐるす')).toBe('valid');
+		expect(check('しづゑ', 'えんと')).toBe('valid');
 	});
 
 	test('disallow words ending with ん by default', () => {
-		expect(check('まんが', 'がまん')).toBe(false);
-		expect(check('さくら', 'らーめん')).toBe(false);
-		expect(check('ぶどう', 'うどん')).toBe(false);
+		expect(check('まんが', 'がまん')).toBe('trailing-n');
+		expect(check('さくら', 'らーめん')).toBe('trailing-n');
+		expect(check('ぶどう', 'うどん')).toBe('trailing-n');
 	});
 
 	test('allow words ending with ん when allowN is true', () => {
-		expect(check('さくら', 'らーめん', { allowN: true })).toBe(true);
-		expect(check('ぶどう', 'うどん', { allowN: true })).toBe(true);
-		expect(check('らーめん', 'んこ', { allowN: true })).toBe(true);
-		expect(check('うどん', 'んま', { allowN: true })).toBe(true);
+		expect(check('さくら', 'らーめん', { allowN: true })).toBe('valid');
+		expect(check('ぶどう', 'うどん', { allowN: true })).toBe('valid');
+		expect(check('らーめん', 'んこ', { allowN: true })).toBe('valid');
+		expect(check('うどん', 'んま', { allowN: true })).toBe('valid');
 	});
 
 	test('mixed cases with allowN', () => {
-		expect(check('ぱん', 'んぱん', { allowN: true })).toBe(true);
-		expect(check('ぱんだ', 'だんご', { allowN: true })).toBe(true);
-		expect(check('だんご', 'ごはん', { allowN: true })).toBe(true);
+		expect(check('ぱん', 'んぱん', { allowN: true })).toBe('valid');
+		expect(check('ぱんだ', 'だんご', { allowN: true })).toBe('valid');
+		expect(check('だんご', 'ごはん', { allowN: true })).toBe('valid');
 	});
 
 	test('edge cases', () => {
-		expect(check('', '')).toBe(true);
-		expect(check('あ', 'あ')).toBe(true);
-		expect(check('ん', 'んこ')).toBe(true);
+		expect(check('', '')).toBe('valid');
+		expect(check('あ', 'あ')).toBe('valid');
+		expect(check('ん', 'んこ')).toBe('valid');
 	});
 });
 

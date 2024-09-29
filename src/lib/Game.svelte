@@ -103,22 +103,18 @@
 		}
 
 		const [vocaloid, yomigana] = entry;
-		if (
-			!(
-				!lastWord ||
-				check(lastWord[0], word, {
-					allowN
-				}) ||
-				check(lastWord[0], yomigana, {
-					allowN
-				}) ||
-				check(lastWord[0], vocaloid, {
-					allowN
-				})
-			)
-		) {
-			alert('その曲名はしりとりのルール違反です');
-			return;
+		if (lastWord) {
+			const [_lastVocaloid, lastYomigana] = lastWord;
+			switch (check(lastYomigana, yomigana, { allowN })) {
+				case 'valid':
+					break;
+				case 'trailing-n':
+					alert('「ん」で終わる曲は追加できません');
+					return;
+				case 'invalid':
+					alert('しりとりが成立していません');
+					return;
+			}
 		}
 
 		words.push([vocaloid, yomigana]);

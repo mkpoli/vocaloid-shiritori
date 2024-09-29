@@ -35,6 +35,8 @@ export interface ShiritoriOptions {
 	stripDiDuAsZiZu: boolean;
 }
 
+export type ShiritoriValidity = 'valid' | 'trailing-n' | 'invalid';
+
 /**
  * しりとりをチェックする
  * @param a 前のワード
@@ -42,7 +44,11 @@ export interface ShiritoriOptions {
  * @param options オプション
  * @returns しりとりが成立しているかどうか
  */
-export function check(a: string, b: string, options?: Partial<ShiritoriOptions>): boolean {
+export function check(
+	a: string,
+	b: string,
+	options?: Partial<ShiritoriOptions>
+): ShiritoriValidity {
 	const {
 		ignoreDakuten = true,
 		stripChouon = true,
@@ -62,7 +68,7 @@ export function check(a: string, b: string, options?: Partial<ShiritoriOptions>)
 	b = toHiragana(b);
 
 	if (!allowN && b.endsWith('ん')) {
-		return false;
+		return 'trailing-n';
 	}
 
 	// 捨てがなを大きくする
@@ -102,7 +108,7 @@ export function check(a: string, b: string, options?: Partial<ShiritoriOptions>)
 		firstCharB = WI_WE_WO[firstCharB as keyof typeof WI_WE_WO] || firstCharB;
 	}
 
-	return lastCharA === firstCharB;
+	return lastCharA === firstCharB ? 'valid' : 'invalid';
 }
 
 /**
