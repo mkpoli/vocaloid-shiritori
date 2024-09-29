@@ -44,7 +44,7 @@
 			);
 		}}>ランダム・スタート</button
 	>
-{:else if words.length === 1}
+{:else}
 	<button
 		class="bg-white text-red-500 px-4 py-2 rounded-md hover:bg-red-500 hover:text-white border-red-500 border-2"
 		onclick={() => {
@@ -52,7 +52,11 @@
 			word = '';
 		}}
 	>
+		{#if words.length === 1}
 		再スタート
+		{:else}
+			リセット
+		{/if}
 	</button>
 {/if}
 
