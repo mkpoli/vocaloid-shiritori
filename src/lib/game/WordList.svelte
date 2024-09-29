@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { indexNextChar } from '$lib/shiritori';
 	import type { Gamemode } from '$lib/game';
-	import { getContext } from 'svelte';
 	import Thinking from '$lib/Thinking.svelte';
 
 	let {
@@ -14,7 +13,6 @@
 		thinking: boolean;
 	} = $props();
 
-	const vocaloids = getContext<Map<string, string>>('vocaloids');
 	const segmenter = new Intl.Segmenter('ja', { granularity: 'grapheme' });
 </script>
 
