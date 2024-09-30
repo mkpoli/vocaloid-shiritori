@@ -63,14 +63,6 @@
 	// $derived(left.length === 0);
 	$effect(() => {
 		if (gameOver) {
-			alert(
-				`ゲームオーバー！\nスコア: ${score}` +
-					(gamemode === 'computer'
-						? words.at(-1)?.[2] === 'user'
-							? 'あなたの勝ちです'
-							: 'あなたの負けです'
-						: '')
-			);
 			uploadScore();
 		}
 	});
