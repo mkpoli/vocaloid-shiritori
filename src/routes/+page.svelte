@@ -1,57 +1,31 @@
 <script lang="ts">
 	import type { Gamemode, Score } from '$lib/game';
 	import Game from '$lib/Game.svelte';
-	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 	import Leaderboard from '$lib/Leaderboard.svelte';
+	import { goto } from '$app/navigation';
+	import { userManager } from '$lib/user.svelte';
 
 	const { data }: { data: PageData } = $props();
 
 	let gamemode = $state<Gamemode | undefined>(undefined);
-
-	let username = $state('');
-
-	onMount(() => {
-		function generateStableRandomNumber() {
-			const userAgent = navigator.userAgent;
-			const screenResolution = `${screen.width}x${screen.height}`;
-			const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-			const uniqueString = `${userAgent}_${screenResolution}_${timezone}`;
-
-			let hash = 0;
-			for (let i = 0; i < uniqueString.length; i++) {
-				const char = uniqueString.charCodeAt(i);
-				hash = (hash << 5) - hash + char;
-				hash = hash & hash;
-			}
-
-			const randomNumber = Math.abs(hash % 100000);
-
-			return randomNumber;
-		}
-
-		username =
-			localStorage.getItem('username') ??
-			`ボカロリスナー${Math.floor(generateStableRandomNumber())}`;
-	});
 </script>
 
 <main class="flex min-w-80 flex-col gap-4 py-8 text-center">
 	{#if gamemode}
-		<Game vocaloids={data.vocaloids} {gamemode} {username} />
+		<Game vocaloids={data.vocaloids} {gamemode} username={userManager.username} />
 	{:else}
 		<h2 class="text-lg font-bold">ユーザー名</h2>
 		<input
 			type="text"
-			bind:value={username}
+			bind:value={userManager.username}
 			class="rounded border p-2"
 			placeholder="ユーザーネーム"
 			onfocus={(e) => {
 				e.currentTarget.setSelectionRange(0, e.currentTarget.value.length);
 			}}
 			onblur={(e) => {
-				localStorage.setItem('username', e.currentTarget.value);
+				userManager.username = e.currentTarget.value;
 			}}
 		/>
 		<h2 class="text-lg font-bold">モード選択</h2>
