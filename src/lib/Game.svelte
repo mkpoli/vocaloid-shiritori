@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser, dev } from '$app/environment';
-	import { check, getNextChar, DEFAULT_SHIRITORI_OPTIONS } from '$lib/shiritori';
+	import { check, getNextChar, DEFAULT_SHIRITORI_OPTIONS, normalize } from '$lib/shiritori';
 	import type { Gamemode } from '$lib/game';
 	import { find } from '$lib/vocaloid';
 	import { onMount, setContext } from 'svelte';
@@ -184,7 +184,7 @@
 			console.info('Last word:', lastWord);
 		}
 
-		const entry = find(vocaloids, word);
+		const entry = find(vocaloids, word) ?? find(vocaloids, normalize(word));
 		if (dev) {
 			console.info('Vocaloid entry:', entry);
 		}
