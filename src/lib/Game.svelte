@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { dev } from '$app/environment';
+	import { browser, dev } from '$app/environment';
 	import { check, getNextChar, DEFAULT_SHIRITORI_OPTIONS } from '$lib/shiritori';
 	import type { Gamemode } from '$lib/game';
 	import { find } from '$lib/vocaloid';
@@ -12,6 +12,8 @@
 		gamemode,
 		username
 	}: { vocaloids: Map<string, string>; gamemode: Gamemode; username: string } = $props();
+
+	let input: HTMLInputElement;
 
 	setContext('vocaloids', vocaloids);
 
@@ -97,6 +99,14 @@
 
 		location.reload();
 	}
+
+	$effect(() => {
+		if (browser) {
+			if (words.length) {
+				input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			}
+		}
+	});
 </script>
 
 <div class="flex items-center justify-center gap-2">
@@ -213,6 +223,7 @@
 	<input
 		type="text"
 		bind:value={word}
+		bind:this={input}
 		placeholder="ボカロ曲名を入力してください"
 		class="rounded-md border border-gray-300 p-2"
 	/>
