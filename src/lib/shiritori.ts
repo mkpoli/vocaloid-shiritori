@@ -14,7 +14,8 @@ export function convertSmallKana(a: string): string {
 		.replace(/ゃ/g, 'や')
 		.replace(/ゅ/g, 'ゆ')
 		.replace(/ょ/g, 'よ')
-		.replace(/ゎ/g, 'わ');
+		.replace(/ゎ/g, 'わ')
+		.replace(/っ/g, 'つ'); // TODO: should this be settable?
 }
 
 /**
