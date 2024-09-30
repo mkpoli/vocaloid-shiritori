@@ -87,7 +87,7 @@ export function check(
 	a = convertSmallKana(a);
 	b = convertSmallKana(b);
 
-	let lastCharA = a.slice(-1);
+	let lastCharA = getNextChar(a, stripChouon);
 	let firstCharB = b.slice(0, 1);
 
 	if (!stripDiDuAsZiZu && ignoreDakuten) {
