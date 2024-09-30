@@ -13,6 +13,9 @@
 
 <svelte:window
 	on:beforeunload={(event) => {
+		if (dev) {
+			return;
+		}
 		event.preventDefault();
 		event.returnValue = true;
 	}}
