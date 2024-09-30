@@ -6,6 +6,7 @@
 	import { onMount, setContext } from 'svelte';
 	import Options from '$lib/game/Options.svelte';
 	import WordList from './game/WordList.svelte';
+	import EndScreen from './game/EndScreen.svelte';
 
 	const {
 		vocaloids,
@@ -52,7 +53,14 @@
 		});
 	}
 
-	let gameOver = $derived(left.length === 0);
+	let gameOver = $state(false);
+
+	$effect(() => {
+		if (left.length === 0) {
+			gameOver = true;
+		}
+	});
+	// $derived(left.length === 0);
 	$effect(() => {
 		if (gameOver) {
 			alert(
@@ -88,17 +96,7 @@
 		});
 	}
 
-	async function terminateGame() {
-		//  upload score
-		const score = words.filter(([, , sender]) => sender === 'user').length * 10;
-
-		await fetch('/api/score', {
-			method: 'POST',
-			body: JSON.stringify({ score, username, mode: gamemode })
-		});
-
-		location.reload();
-	}
+	let triggeredEnd = $state(false);
 
 	$effect(() => {
 		if (browser) {
@@ -153,7 +151,9 @@
 		<div>スコア: {score}</div>
 		<button
 			onclick={() => {
-				terminateGame();
+				uploadScore();
+				gameOver = true;
+				triggeredEnd = true;
 			}}
 			class="rounded-md border border-black bg-white px-4 py-2 text-black hover:bg-slate-900 hover:text-white"
 			title="ゲームを終了して、スコアをランキングに登録します"
@@ -241,3 +241,38 @@
 </form>
 
 <Options bind:allowN bind:stripChouon />
+
+{#if gameOver}
+	<EndScreen
+		{score}
+		winner={words.at(-1)?.[2] === 'user' ? username : 'コンピュータ'}
+		lastWord={words.at(-1) ? [words.at(-1)?.[0]!, words.at(-1)?.[1]!] : undefined}
+		{gamemode}
+		{triggeredEnd}
+		onback={() => {
+			gameOver = false;
+			triggeredEnd = false;
+			location.reload();
+		}}
+		onrestart={() => {
+			words = [];
+			word = '';
+			gameOver = false;
+			triggeredEnd = false;
+		}}
+		onsave={() => {
+			const csv = words
+				.map(([vocaloid, yomigana, sender]) => `${vocaloid},${yomigana},${sender}`)
+				.join('\n');
+			const blob = new Blob([csv], { type: 'text/csv' });
+			const url = window.URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.style.display = 'none';
+			a.href = url;
+			a.download = `${username}-${gamemode}-${new Date().toISOString()}.csv`;
+			document.body.appendChild(a);
+			a.click();
+			window.URL.revokeObjectURL(url);
+		}}
+	/>
+{/if}
