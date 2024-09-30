@@ -54,6 +54,9 @@
 			onfocus={(e) => {
 				e.currentTarget.setSelectionRange(0, e.currentTarget.value.length);
 			}}
+			onblur={(e) => {
+				localStorage.setItem('username', e.currentTarget.value);
+			}}
 		/>
 		<h2 class="text-lg font-bold">モード選択</h2>
 
