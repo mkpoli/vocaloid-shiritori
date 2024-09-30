@@ -123,6 +123,24 @@
 	}
 
 	let rank = $state(0);
+
+	let lastUserWord: [string, string] | undefined = $derived.by(() => {
+		if (!words.length) {
+			return undefined;
+		}
+		let result = undefined;
+		for (const word of words.toReversed()) {
+			if (word[2] === 'user') {
+				result = word;
+				break;
+			}
+		}
+		if (!result) {
+			const lastWord = words.at(-1);
+			return lastWord ? [lastWord[0], lastWord[1]] : undefined;
+		}
+		return [result[0]!, result[1]!];
+	});
 </script>
 
 <div class="flex items-center justify-center gap-2">
@@ -250,7 +268,7 @@
 	<EndScreen
 		{score}
 		winner={words.at(-1)?.[2] === 'user' ? username : 'コンピュータ'}
-		lastWord={words.at(-1) ? [words.at(-1)?.[0]!, words.at(-1)?.[1]!] : undefined}
+		lastWord={lastUserWord}
 		{gamemode}
 		{triggeredEnd}
 		{rank}
