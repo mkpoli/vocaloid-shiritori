@@ -88,6 +88,20 @@
 		});
 	}
 
+	function restartGame() {
+		words = [];
+		word = '';
+		gameOver = false;
+		triggeredEnd = false;
+		if (gamemode === 'computer') {
+			thinking = true;
+			setTimeout(() => {
+				words.push([...left[Math.floor(Math.random() * left.length)], 'computer']);
+				thinking = false;
+			}, 500);
+		}
+	}
+
 	let triggeredEnd = $state(false);
 
 	$effect(() => {
@@ -123,15 +137,7 @@
 			class="rounded-md border border-red-500 bg-white px-4 py-2 text-red-500 hover:bg-red-500 hover:text-white"
 			onclick={async () => {
 				await uploadScore();
-				words = [];
-				word = '';
-				if (gamemode === 'computer') {
-					thinking = true;
-					setTimeout(() => {
-						words.push([...left[Math.floor(Math.random() * left.length)], 'computer']);
-						thinking = false;
-					}, 500);
-				}
+				restartGame();
 			}}
 		>
 			{#if gamemode !== 'computer' && words.length === 1}
@@ -247,10 +253,7 @@
 			location.reload();
 		}}
 		onrestart={() => {
-			words = [];
-			word = '';
-			gameOver = false;
-			triggeredEnd = false;
+			restartGame();
 		}}
 		onsave={() => {
 			const csv = words
