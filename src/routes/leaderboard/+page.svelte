@@ -6,6 +6,8 @@
 	let { data }: { data: PageData } = $props();
 </script>
 
+<a href="/">🏠</a>
+
 <h1 class="my-4 text-2xl font-bold">ランキング</h1>
 <Leaderboard
 	full
