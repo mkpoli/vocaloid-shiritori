@@ -5,8 +5,10 @@
 		score,
 		winner,
 		gamemode,
+		length,
 		lastWord,
 		triggeredEnd,
+		rank,
 		onback,
 		onrestart,
 		onsave
@@ -15,6 +17,8 @@
 		winner: string;
 		gamemode: Gamemode;
 		lastWord: [string, string] | undefined;
+		length: number;
+		rank: number;
 		triggeredEnd: boolean;
 		onback: () => void;
 		onrestart: () => void;
@@ -38,6 +42,7 @@
 	<p class="bg-gradient-to-r from-blue-500 to-orange-300 bg-clip-text text-6xl text-transparent">
 		{score}
 	</p>
+	<p class="text-xl font-bold text-black">ランキング{rank}位</p>
 	{#if !triggeredEnd}
 		<p class="text-xl font-bold text-black">{winner}の勝ちです！</p>
 		{#if lastWord}

@@ -63,7 +63,9 @@
 	// $derived(left.length === 0);
 	$effect(() => {
 		if (gameOver) {
-			uploadScore();
+			uploadScore().then((res) => {
+				rank = res;
+			});
 		}
 	});
 
@@ -79,13 +81,15 @@
 
 	let score = $derived(words.filter(([, , sender]) => sender === 'user').length * 10); // TODO: Advanced scoring based on rarity and time and etc.
 
-	async function uploadScore() {
+	async function uploadScore(): Promise<number> {
 		const score = words.filter(([, , sender]) => sender === 'user').length * 10;
 
-		await fetch('/api/score', {
+		const res = await fetch('/api/score', {
 			method: 'POST',
 			body: JSON.stringify({ score, username, mode: gamemode })
 		});
+		const data = (await res.json()) as { rank: number };
+		return data.rank;
 	}
 
 	function restartGame() {
@@ -117,6 +121,8 @@
 		globalThis.find = find;
 		globalThis.vocaloids = vocaloids;
 	}
+
+	let rank = $state(0);
 </script>
 
 <div class="flex items-center justify-center gap-2">
@@ -136,7 +142,7 @@
 		<button
 			class="rounded-md border border-red-500 bg-white px-4 py-2 text-red-500 hover:bg-red-500 hover:text-white"
 			onclick={async () => {
-				await uploadScore();
+				rank = await uploadScore();
 				restartGame();
 			}}
 		>
@@ -148,8 +154,8 @@
 		</button>
 		<div>スコア: {score}</div>
 		<button
-			onclick={() => {
-				uploadScore();
+			onclick={async () => {
+				rank = await uploadScore();
 				gameOver = true;
 				triggeredEnd = true;
 			}}
@@ -247,6 +253,8 @@
 		lastWord={words.at(-1) ? [words.at(-1)?.[0]!, words.at(-1)?.[1]!] : undefined}
 		{gamemode}
 		{triggeredEnd}
+		{rank}
+		length={words.length}
 		onback={() => {
 			gameOver = false;
 			triggeredEnd = false;
