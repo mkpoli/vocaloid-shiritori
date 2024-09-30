@@ -34,7 +34,7 @@
 
 	let twitterShareURL = 'https://vocaloid-shiritori.mkpo.li/';
 	let twitterShareText = $derived(
-		`【ボカロ曲名しりとり】\n🎶${length}曲に渡るしりとりの激戦の結果、私の点数は${score}点で、ランキング${rank}位でした🏆\n\n🎼最後の曲は\n\n　${lastWord?.[0]}\n\nでした！\n\n🔻ボカロ好きのみんなもやってみてね！🔻\n`
+		`【ボカロ曲名しりとり】\n🎶${length}曲に渡るしりとりの激戦の結果、私は${score}点でランキング${rank}位でした🏆\n\n🎼最後の曲は「${lastWord?.[0]}」でした！\n\n🔻ボカロ好きのみんなもやってみてね！🔻\n`
 	);
 	let twitterShareHashtag = 'ボカロ曲名しりとり';
 	let twitterUrl = $derived(
