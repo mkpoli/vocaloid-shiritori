@@ -11,6 +11,13 @@
 	let gamemode = $state<Gamemode | undefined>(undefined);
 </script>
 
+<svelte:window
+	on:beforeunload={(event) => {
+		event.preventDefault();
+		event.returnValue = true;
+	}}
+/>
+
 <main class="flex min-w-80 flex-col gap-4 py-8 text-center">
 	{#if gamemode}
 		<Game vocaloids={data.vocaloids} {gamemode} username={userManager.username} />
