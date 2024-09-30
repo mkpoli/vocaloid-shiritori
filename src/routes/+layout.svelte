@@ -6,9 +6,18 @@
 	<title>ボカロ曲名しりとり</title>
 </svelte:head>
 
+<header class="flex flex-col gap-4 py-8 text-center">
+	<h1 class="text-2xl font-bold">ボカロ曲名しりとり！</h1>
+	<p class="text-lg">「ボカロ曲名しりとり！」とは、ボカロ曲名を使ったしりとりゲームです。</p>
+</header>
+
+<hr class="w-80" />
+
 <slot />
 
-<footer class="py-12 text-center">
+<hr class="w-80" />
+
+<footer class="py-8 text-center">
 	<p>
 		<a
 			href="https://github.com/blueset/vocaloid-yomigana/issues"

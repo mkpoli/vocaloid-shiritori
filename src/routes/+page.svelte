@@ -37,11 +37,7 @@
 	});
 </script>
 
-<main class="flex flex-col gap-4 py-12 text-center">
-	<h1 class="text-2xl font-bold">ボカロ曲名しりとり！</h1>
-	<p class="text-lg">「ボカロ曲名しりとり！」とは、ボカロ曲名を使ったしりとりゲームです。</p>
-	<hr />
-
+<main class="flex min-w-80 flex-col gap-4 py-8 text-center">
 	{#if gamemode}
 		<Game vocaloids={data.vocaloids} {gamemode} {username} />
 	{:else}
