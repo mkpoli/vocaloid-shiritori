@@ -13,7 +13,8 @@ export async function load(): Promise<[string, string][]> {
 			(data) => (data.length === 3 ? [data[1], data[2]] : [data[0], data[1]]) as [string, string]
 		)
 		.filter(([, yomigana]) => yomigana)
-		.filter(([, yomigana]) => !/\p{sc=Han}/u.test(yomigana));
+		.filter(([, yomigana]) => !/\p{sc=Han}/u.test(yomigana)) // TODO: Why is this filter not working?
+		.filter(([, yomigana]) => !/\p{sc=Latn}/u.test(yomigana.at(-1) ?? '')); // TODO: Find a better way to convert latn words to hiragana rather than simply ignoring them
 	// TODO: dedupe
 }
 
