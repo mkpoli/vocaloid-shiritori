@@ -111,6 +111,7 @@
 	if (dev) {
 		globalThis.check = check;
 		globalThis.find = find;
+		globalThis.vocaloids = vocaloids;
 	}
 </script>
 
