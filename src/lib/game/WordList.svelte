@@ -6,11 +6,13 @@
 	let {
 		words,
 		gamemode,
-		thinking
+		thinking,
+		stripChouon
 	}: {
 		words: [vocaloid: string, yomigana: string, sender: 'user' | 'computer'][];
 		gamemode: Gamemode;
 		thinking: boolean;
+		stripChouon: boolean;
 	} = $props();
 
 	const segmenter = new Intl.Segmenter('ja', { granularity: 'grapheme' });
@@ -18,7 +20,7 @@
 
 <ul class="mx-auto flex w-full list-inside flex-col items-center justify-start gap-2 bg-white">
 	{#each words as [vocaloid, yomigana, sender]}
-		{@const index = indexNextChar(yomigana)}
+		{@const index = indexNextChar(yomigana, stripChouon)}
 		<li
 			class="w-max rounded-md px-3 py-2 shadow-sm"
 			class:self-start={gamemode !== 'single' && sender === 'computer'}

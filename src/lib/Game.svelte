@@ -148,7 +148,7 @@
 	{/if}
 </div>
 
-<WordList {words} {gamemode} {thinking} />
+<WordList {words} {gamemode} {thinking} {stripChouon} />
 
 <form
 	class="flex items-center justify-center gap-2"
@@ -180,7 +180,7 @@
 
 		const [vocaloid, yomigana] = entry;
 
-		switch (check(lastWord?.[1] ?? '', yomigana, { allowN })) {
+		switch (check(lastWord?.[1] ?? '', yomigana, { allowN, stripChouon })) {
 			case 'valid':
 				break;
 			case 'trailing-n':
