@@ -173,7 +173,6 @@
 		<div>スコア: {score}</div>
 		<button
 			onclick={async () => {
-				rank = await uploadScore();
 				gameOver = true;
 				triggeredEnd = true;
 			}}
