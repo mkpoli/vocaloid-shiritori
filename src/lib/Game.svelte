@@ -84,6 +84,10 @@
 	async function uploadScore(): Promise<number> {
 		const score = words.filter(([, , sender]) => sender === 'user').length * 10;
 
+		if (score === 0) {
+			return 0;
+		}
+
 		const res = await fetch('/api/score', {
 			method: 'POST',
 			body: JSON.stringify({ score, username, mode: gamemode })
