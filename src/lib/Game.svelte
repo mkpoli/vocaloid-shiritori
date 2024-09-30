@@ -107,6 +107,11 @@
 			}
 		}
 	});
+
+	if (dev) {
+		globalThis.check = check;
+		globalThis.find = find;
+	}
 </script>
 
 <div class="flex items-center justify-center gap-2">
