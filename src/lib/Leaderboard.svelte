@@ -6,7 +6,10 @@
 
 <ol class="mx-auto flex w-max flex-col gap-2">
 	{#each scores as score, i}
-		<li class="relative rounded py-3 pl-10 pr-4 drop-shadow-md" title={score.timestamp.toString()}>
+		<li
+			class="relative rounded border border-gray-300 bg-white py-3 pl-10 pr-4 drop-shadow-sm"
+			title={score.timestamp.toString()}
+		>
 			<div>
 				{i + 1}. {score.username} - {score.score}
 			</div>
