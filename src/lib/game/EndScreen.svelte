@@ -31,6 +31,15 @@
 		multi: 'マルチ・モード',
 		together: 'パブリック・モード'
 	} as const;
+
+	let twitterShareURL = 'https://vocaloid-shiritori.mkpo.li/';
+	let twitterShareText = $derived(
+		`【ボカロ曲名しりとり】\n🎶${length}曲に渡るしりとりの激戦の結果、私の点数は${score}点で、ランキング${rank}位でした🏆\n\n🎼最後の曲は\n\n　${lastWord?.[0]}\n\nでした！\n\n🔻ボカロ好きのみんなもやってみてね！🔻\n`
+	);
+	let twitterShareHashtag = 'ボカロ曲名しりとり';
+	let twitterUrl = $derived(
+		`https://twitter.com/intent/tweet?text=${encodeURIComponent(twitterShareText)}&hashtags=${twitterShareHashtag}&url=${encodeURIComponent(twitterShareURL)}&related=mkpoli`
+	);
 </script>
 
 <div class="pointer-events-none fixed inset-0 z-20 flex bg-black/50 backdrop-blur-sm"></div>
@@ -72,4 +81,11 @@
 	<button class="w-full rounded border border-black bg-transparent px-4 py-2" onclick={onsave}
 		>結果をダウロード</button
 	>
+	<a
+		href={twitterUrl}
+		class="w-full rounded border border-black bg-transparent px-4 py-2"
+		target="_blank"
+	>
+		X (Twitter) でシェア
+	</a>
 </div>
