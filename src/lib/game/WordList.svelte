@@ -17,10 +17,18 @@
 	} = $props();
 
 	const segmenter = new Intl.Segmenter('ja', { granularity: 'grapheme' });
+	const dateFormatter = new Intl.DateTimeFormat('ja-JP', {
+		year: 'numeric',
+		month: '2-digit',
+		day: '2-digit',
+		hour: '2-digit',
+		minute: '2-digit',
+		second: '2-digit'
+	});
 </script>
 
 <ul class="mx-auto flex w-full list-inside flex-col items-center justify-start gap-2 bg-white">
-	{#each words as { vocaloid, yomigana, sender }}
+	{#each words.toSorted((a, b) => a.sender.createdAt - b.sender.createdAt) as { vocaloid, yomigana, sender }}
 		{@const index = indexNextChar(yomigana, stripChouon)}
 		{@const isMe = sender.type === 'user' && sender.username === userManager.username}
 		<li
@@ -39,7 +47,7 @@
 			class:justify-end={gamemode === 'public' && isMe}
 			class:items-end={gamemode === 'public' && isMe}
 			class:items-start={gamemode === 'public' && !isMe}
-			title={sender.createdAt.toString()}
+			title={dateFormatter.format(new Date(sender.createdAt))}
 		>
 			{#if !isMe && sender.type === 'user'}
 				<span class="text-xs font-bold text-blue-400">
