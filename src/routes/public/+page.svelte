@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { userManager } from '$lib/user.svelte';
 	import type { PageData } from './$types';
-
+	import type { GameWithRecords } from './+page.server';
 	// const { data } = await useFetch('/api/public');
 	const { data }: { data: PageData } = $props();
 
@@ -17,13 +17,30 @@
 
 <h3 class="text-md font-bold">進行中のゲーム</h3>
 
-{#each ongoingGames as game}
+{#snippet card(game: GameWithRecords)}
 	<a
 		href={`/public/${game.id}`}
-		class="flex flex-row gap-2 rounded-md border-2 border-gray-200 bg-gray-100 p-2"
+		class="flex flex-col gap-2 rounded-md border-2 border-gray-200 bg-gray-100 p-2 hover:bg-gray-200"
 	>
-		{game.createdAt}</a
-	>
+		<h4 class="font-bold">
+			<span title={`${game.records.first.username}@${game.records.first.createdAt}`}>
+				{game.records.first.songName}
+			</span>
+			→…→<span title={`${game.records.last.username}@${game.records.last.createdAt}`}>
+				{game.records.last.songName}
+			</span>
+		</h4>
+
+		<p class="text-sm text-gray-800">
+			{game.createdBy}
+			@
+			{game.createdAt}
+		</p>
+	</a>
+{/snippet}
+
+{#each ongoingGames as game}
+	{@render card(game)}
 {/each}
 {#if ongoingGames.length < 5}
 	<button
@@ -54,7 +71,5 @@
 <h3 class="text-md font-bold">過去のゲーム</h3>
 
 {#each endedGames as game}
-	<div>
-		<a href={`/public/${game.id}`}>{game.createdAt}</a>
-	</div>
+	{@render card(game)}
 {/each}
