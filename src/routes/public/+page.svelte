@@ -11,7 +11,7 @@
 	const ongoingGames = data.games.filter((game) => !game.ended);
 </script>
 
-<!-- <WordList {words} gamemode="public" thinking={false} stripChouon={true} /> -->
+<a href="/">🏠</a>
 
 <h2 class="text-xl font-bold">パブリック・ゲーム</h2>
 
