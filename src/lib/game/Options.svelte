@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { DEFAULT_SHIRITORI_OPTIONS } from '$lib/shiritori';
 	import { getContext } from 'svelte';
 
 	let {
