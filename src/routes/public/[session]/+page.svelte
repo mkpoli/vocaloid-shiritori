@@ -6,7 +6,7 @@
 	const { game, records, vocaloids } = data;
 </script>
 
-<h2 class="text-xl font-bold">パブリック・ゲーム No.{game.id}</h2>
+<h2 class="text-xl font-bold"><a href="/public" class="hover:underline">パブリック・ゲーム</a> No.{game.id}</h2>
 
 <p class="text-sm text-slate-500">
 	<time datetime={game.createdAt.toString()} class="">{game.createdAt}</time>
