@@ -19,10 +19,10 @@ export async function load(): Promise<[string, string][]> {
 }
 
 /**
- * ボカロ曲名のマップに曲名が存在するかどうかをチェックする
+ * ボカロ曲名のマップから曲名を検索する
  * @param map ボカロ曲名のマップ
  * @param word 曲名
- * @returns 曲名がマップに存在するかどうか
+ * @returns 曲名がマップに存在する場合は曲名とひらがなを返す
  */
 export function find(map: Map<string, string>, word: string): [string, string] | undefined {
 	const normalized = normalize(word);

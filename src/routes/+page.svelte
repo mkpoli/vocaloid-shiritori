@@ -5,6 +5,7 @@
 	import Leaderboard from '$lib/Leaderboard.svelte';
 	import { goto } from '$app/navigation';
 	import { userManager } from '$lib/user.svelte';
+	import { dev } from '$app/environment';
 
 	const { data }: { data: PageData } = $props();
 
@@ -56,8 +57,13 @@
 		>
 			コンピュータ
 		</button>
-		<button class="rounded bg-gray-500 px-4 py-2 text-white" disabled>
-			パブリック（準備中）
+		<button
+			onclick={() => {
+				goto('/public');
+			}}
+			class="rounded bg-green-500 px-4 py-2 text-white"
+		>
+			パブリック
 		</button>
 		<button class="rounded bg-gray-500 px-4 py-2 text-white" disabled> マルチ（準備中） </button>
 	{/if}

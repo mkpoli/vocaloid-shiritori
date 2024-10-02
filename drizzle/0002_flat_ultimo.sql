@@ -1,0 +1,1 @@
+ALTER TABLE `public_games` ADD `created_by` text NOT NULL;

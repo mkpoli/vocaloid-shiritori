@@ -8,6 +8,20 @@
       "when": 1727605555893,
       "tag": "0000_real_toxin",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1727675009213,
+      "tag": "0001_daily_zzzax",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1727675575363,
+      "tag": "0002_flat_ultimo",
+      "breakpoints": true
     }
   ]
 }

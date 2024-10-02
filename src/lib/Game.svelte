@@ -1,25 +1,40 @@
 <script lang="ts">
 	import { browser, dev } from '$app/environment';
 	import { check, getNextChar, DEFAULT_SHIRITORI_OPTIONS, normalize } from '$lib/shiritori';
-	import type { Gamemode } from '$lib/game';
+	import type { Gamemode, Word } from '$lib/game';
 	import { find } from '$lib/vocaloid';
 	import { onMount, setContext } from 'svelte';
 	import Options from '$lib/game/Options.svelte';
 	import WordList from './game/WordList.svelte';
 	import EndScreen from './game/EndScreen.svelte';
+	import { error } from '@sveltejs/kit';
 
 	const {
 		vocaloids,
 		gamemode,
-		username
-	}: { vocaloids: Map<string, string>; gamemode: Gamemode; username: string } = $props();
+		username,
+		words: initialWords = [],
+		gameId = undefined,
+		ended = false
+	}: {
+		vocaloids: Map<string, string>;
+		gamemode: Gamemode;
+		username: string;
+		words?: Word[];
+		gameId?: number;
+		ended?: boolean;
+	} = $props();
+
+	if (gamemode === 'public' && !gameId) {
+		throw error(403, 'Game ID is required for public mode');
+	}
 
 	let input: HTMLInputElement;
 
 	setContext('vocaloids', vocaloids);
 
 	let word = $state('');
-	let words: [vocaloid: string, yomigana: string, sender: 'user' | 'computer'][] = $state([]);
+	let words: Word[] = $state(initialWords);
 	let allowN = $state(DEFAULT_SHIRITORI_OPTIONS.allowN);
 	let stripChouon = $state(DEFAULT_SHIRITORI_OPTIONS.stripChouon);
 	let thinking = $state(false);
@@ -29,25 +44,25 @@
 			? [...vocaloids]
 			: [...vocaloids]
 					.filter(([vocaloid, yomigana]) => {
-						const lastYomigana = words.at(-1)?.[1];
+						const lastYomigana = words.at(-1)?.yomigana;
 						if (!lastYomigana) {
 							return true;
 						}
 						const nextChar = getNextChar(lastYomigana, stripChouon);
 						return yomigana.startsWith(nextChar) || vocaloid.startsWith(nextChar);
 					})
-					.filter(([vocaloid]) => !words.some(([v]) => v === vocaloid))
+					.filter(([vocaloid]) => !words.some(({ vocaloid: v }) => v === vocaloid))
 					.filter(([, yomigana]) => allowN || !yomigana.endsWith('ん'))
 	);
 
 	if (dev) {
-		console.log({ vocaloids });
+		console.info({ vocaloids });
 		$effect(() => {
-			console.log('left', left.length);
+			console.info('left', left.length);
 			if (words.length) {
 				const shuffledVocaloids = [...left].sort(() => Math.random() - 0.5);
 				for (const [v, y] of shuffledVocaloids) {
-					console.log(`${v}（${y}）`);
+					console.info(`${v}（${y}）`);
 				}
 			}
 		});
@@ -73,16 +88,24 @@
 		if (gamemode === 'computer') {
 			thinking = true;
 			setTimeout(() => {
-				words.push([...left[Math.floor(Math.random() * left.length)], 'computer']);
+				const [vocaloid, yomigana] = left[Math.floor(Math.random() * left.length)];
+
+				words.push({ vocaloid, yomigana, sender: { type: 'computer' } });
 				thinking = false;
 			}, 500);
 		}
+
+		if (gamemode === 'public') {
+			setInterval(async () => {
+				words = await fetchNewRecords();
+			}, 1000);
+		}
 	});
 
-	let score = $derived(words.filter(([, , sender]) => sender === 'user').length * 10); // TODO: Advanced scoring based on rarity and time and etc.
+	let score = $derived(words.filter(({ sender }) => sender.type === 'user').length * 10); // TODO: Advanced scoring based on rarity and time and etc.
 
 	async function uploadScore(): Promise<number> {
-		const score = words.filter(([, , sender]) => sender === 'user').length * 10;
+		const score = words.filter(({ sender }) => sender.type === 'user').length * 10;
 
 		if (score === 0) {
 			return 0;
@@ -104,9 +127,14 @@
 		if (gamemode === 'computer') {
 			thinking = true;
 			setTimeout(() => {
-				words.push([...left[Math.floor(Math.random() * left.length)], 'computer']);
+				const [vocaloid, yomigana] = left[Math.floor(Math.random() * left.length)];
+				words.push({
+					vocaloid,
+					yomigana,
+					sender: { type: 'computer' }
+				});
 				thinking = false;
-			}, 500);
+			}, 2000);
 		}
 	}
 
@@ -134,17 +162,40 @@
 		}
 		let result = undefined;
 		for (const word of words.toReversed()) {
-			if (word[2] === 'user') {
+			if (word.sender.type === 'user') {
 				result = word;
 				break;
 			}
 		}
 		if (!result) {
 			const lastWord = words.at(-1);
-			return lastWord ? [lastWord[0], lastWord[1]] : undefined;
+			return lastWord ? [lastWord.vocaloid, lastWord.yomigana] : undefined;
 		}
-		return [result[0]!, result[1]!];
+		return [result.vocaloid, result.yomigana];
 	});
+
+	async function fetchNewRecords(): Promise<Word[]> {
+		if (gamemode !== 'public') {
+			return [];
+		}
+		const res = await fetch(`/api/public/${gameId}`, {
+			method: 'GET'
+		});
+		const data = (await res.json()) as {
+			records: {
+				songName: string;
+				username: string;
+			}[];
+		};
+		return data.records.map(({ songName, username }) => {
+			const [vocaloid, yomigana] = find(vocaloids, songName) ?? [songName, normalize(songName)];
+			return {
+				vocaloid,
+				yomigana,
+				sender: { type: 'user', username }
+			};
+		});
+	}
 </script>
 
 <div class="flex items-center justify-center gap-2">
@@ -152,125 +203,143 @@
 		<button
 			class="rounded-md bg-slate-500 px-4 py-2 text-white hover:bg-slate-600"
 			onclick={() => {
-				words.push([
-					...[...vocaloids].filter(([, yomigana]) => allowN || !yomigana.endsWith('ん'))[
-						Math.floor(Math.random() * vocaloids.size)
-					],
-					'user'
-				]);
+				const [vocaloid, yomigana] = [...vocaloids].filter(
+					([, yomigana]) => allowN || !yomigana.endsWith('ん')
+				)[Math.floor(Math.random() * vocaloids.size)];
+				words.push({
+					vocaloid,
+					yomigana,
+					sender: { type: 'computer' }
+				});
 			}}>ランダム・スタート</button
 		>
 	{:else}
-		<button
-			class="rounded-md border border-red-500 bg-white px-4 py-2 text-red-500 hover:bg-red-500 hover:text-white"
-			onclick={async () => {
-				rank = await uploadScore();
-				restartGame();
-			}}
-		>
-			{#if gamemode !== 'computer' && words.length === 1}
-				再スタート
-			{:else}
-				リセット
-			{/if}
-		</button>
+		{#if ['computer', 'single'].includes(gamemode)}
+			<button
+				class="rounded-md border border-red-500 bg-white px-4 py-2 text-red-500 hover:bg-red-500 hover:text-white"
+				onclick={async () => {
+					rank = await uploadScore();
+					restartGame();
+				}}
+			>
+				{#if gamemode !== 'computer' && words.length === 1}
+					再スタート
+				{:else}
+					リセット
+				{/if}
+			</button>
+		{/if}
 		<div>スコア: {score}</div>
-		<button
-			onclick={async () => {
-				gameOver = true;
-				triggeredEnd = true;
-			}}
-			class="rounded-md border border-black bg-white px-4 py-2 text-black hover:bg-slate-900 hover:text-white"
-			title="ゲームを終了して、スコアをランキングに登録します"
-		>
-			<!-- TODO: （5曲以上の場合） -->
-			ゲーム終了
-		</button>
+		{#if ['computer', 'single'].includes(gamemode)}
+			<button
+				onclick={async () => {
+					gameOver = true;
+					triggeredEnd = true;
+				}}
+				class="rounded-md border border-black bg-white px-4 py-2 text-black hover:bg-slate-900 hover:text-white"
+				title="ゲームを終了して、スコアをランキングに登録します"
+			>
+				<!-- TODO: （5曲以上の場合） -->
+				ゲーム終了
+			</button>
+		{/if}
 	{/if}
 </div>
 
 <WordList {words} {gamemode} {thinking} {stripChouon} />
 
-<form
-	class="flex items-center justify-center gap-2"
-	onsubmit={(e) => {
-		e.preventDefault();
+{#if !ended}
+	<form
+		class="flex items-center justify-center gap-2"
+		onsubmit={async (e) => {
+			e.preventDefault();
 
-		if (dev) {
-			console.info('User input:', word);
-		}
+			words = await fetchNewRecords();
 
-		if (!word) {
-			alert('曲名を入力してください');
-			return;
-		}
+			if (dev) {
+				console.info('User input:', word);
+			}
 
-		const lastWord = words.at(-1);
-		if (dev) {
-			console.info('Last word:', lastWord);
-		}
-
-		const entry = find(vocaloids, word) ?? find(vocaloids, normalize(word));
-		if (dev) {
-			console.info('Vocaloid entry:', entry);
-		}
-		if (!entry) {
-			alert('その曲名は存在しません');
-			return;
-		}
-
-		const [vocaloid, yomigana] = entry;
-
-		switch (check(lastWord?.[1] ?? '', yomigana, { allowN, stripChouon })) {
-			case 'valid':
-				break;
-			case 'trailing-n':
-				alert('「ん」で終わる曲は追加できません');
+			if (!word) {
+				alert('曲名を入力してください');
 				return;
-			case 'invalid':
-				alert('しりとりが成立していません');
+			}
+
+			const lastWord = words.at(-1);
+			if (dev) {
+				console.info('Last word:', lastWord);
+			}
+
+			const entry = find(vocaloids, word) ?? find(vocaloids, normalize(word));
+			if (dev) {
+				console.info('Vocaloid entry:', entry);
+			}
+			if (!entry) {
+				alert('その曲名は存在しません');
 				return;
-		}
+			}
 
-		words.push([vocaloid, yomigana, 'user']);
+			const [vocaloid, yomigana] = entry;
 
-		if (gamemode === 'computer') {
-			thinking = true;
-			setTimeout(
-				() => {
-					words.push([...left[Math.floor(Math.random() * left.length)], 'computer']);
+			switch (check(lastWord?.yomigana ?? '', yomigana, { allowN, stripChouon })) {
+				case 'valid':
+					break;
+				case 'trailing-n':
+					alert('「ん」で終わる曲は追加できません');
+					return;
+				case 'invalid':
+					alert('しりとりが成立していません');
+					return;
+			}
 
-					thinking = false;
-				},
-				1000 + Math.random() * 500
-			);
-		}
+			words.push({ vocaloid, yomigana, sender: { type: 'user', username } });
 
-		// TODO: Better alert
-		// TODO: Show error type and context
-		word = '';
-	}}
->
-	<input
-		type="text"
-		bind:value={word}
-		bind:this={input}
-		placeholder="ボカロ曲名を入力してください"
-		class="rounded-md border border-gray-300 p-2"
-	/>
-	<button
-		type="submit"
-		class="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-		disabled={thinking}>追加</button
-	><span class="text-xs text-gray-500">{left.length}曲</span>
-</form>
+			if (gamemode === 'computer') {
+				thinking = true;
+				setTimeout(
+					() => {
+						const [vocaloid, yomigana] = left[Math.floor(Math.random() * left.length)];
+						words.push({ vocaloid, yomigana, sender: { type: 'computer' } });
+
+						thinking = false;
+					},
+					1000 + Math.random() * 500
+				);
+			}
+
+			if (gamemode === 'public') {
+				await fetch(`/api/public/${gameId}`, {
+					method: 'POST',
+					body: JSON.stringify({ vocaloid, username })
+				});
+			}
+
+			// TODO: Better alert
+			// TODO: Show error type and context
+			word = '';
+		}}
+	>
+		<input
+			type="text"
+			bind:value={word}
+			bind:this={input}
+			placeholder="ボカロ曲名を入力してください"
+			class="rounded-md border border-gray-300 p-2"
+		/>
+		<button
+			type="submit"
+			class="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+			disabled={thinking}>追加</button
+		><span class="text-xs text-gray-500">{left.length}曲</span>
+	</form>
+{/if}
 
 <Options bind:allowN bind:stripChouon />
 
 {#if gameOver}
 	<EndScreen
 		{score}
-		winner={words.at(-1)?.[2] === 'user' ? username : 'コンピュータ'}
+		winner={words.at(-1)?.sender.type === 'user' ? username : 'コンピュータ'}
 		lastWord={lastUserWord}
 		{gamemode}
 		{triggeredEnd}
@@ -286,7 +355,10 @@
 		}}
 		onsave={() => {
 			const csv = words
-				.map(([vocaloid, yomigana, sender]) => `${vocaloid},${yomigana},${sender}`)
+				.map(
+					({ vocaloid, yomigana, sender }) =>
+						`${vocaloid},${yomigana},${sender.type},${sender.type === 'computer' ? '' : sender.username}`
+				)
 				.join('\n');
 			const blob = new Blob([csv], { type: 'text/csv' });
 			const url = window.URL.createObjectURL(blob);
