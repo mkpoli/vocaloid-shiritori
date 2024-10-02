@@ -29,7 +29,7 @@
 		computer: 'コンピュータ・モード',
 		single: 'シングル・モード',
 		multi: 'マルチ・モード',
-		together: 'パブリック・モード'
+		public: 'パブリック・モード'
 	} as const;
 
 	let twitterShareURL = 'https://vocaloid-shiritori.mkpo.li/';
