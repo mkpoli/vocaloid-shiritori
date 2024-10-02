@@ -90,7 +90,7 @@
 			setTimeout(() => {
 				const [vocaloid, yomigana] = left[Math.floor(Math.random() * left.length)];
 
-				words.push({ vocaloid, yomigana, sender: { type: 'computer' } });
+				words.push({ vocaloid, yomigana, sender: { type: 'computer', createdAt: Date.now() } });
 				thinking = false;
 			}, 500);
 		}
@@ -131,7 +131,7 @@
 				words.push({
 					vocaloid,
 					yomigana,
-					sender: { type: 'computer' }
+					sender: { type: 'computer', createdAt: Date.now() }
 				});
 				thinking = false;
 			}, 2000);
@@ -192,7 +192,7 @@
 			return {
 				vocaloid,
 				yomigana,
-				sender: { type: 'user', username }
+				sender: { type: 'user', username, createdAt: Date.now() }
 			};
 		});
 	}
@@ -209,7 +209,7 @@
 				words.push({
 					vocaloid,
 					yomigana,
-					sender: { type: 'computer' }
+					sender: { type: 'computer', createdAt: Date.now() }
 				});
 			}}>ランダム・スタート</button
 		>
@@ -292,14 +292,14 @@
 					return;
 			}
 
-			words.push({ vocaloid, yomigana, sender: { type: 'user', username } });
+			words.push({ vocaloid, yomigana, sender: { type: 'user', username, createdAt: Date.now() } });
 
 			if (gamemode === 'computer') {
 				thinking = true;
 				setTimeout(
 					() => {
 						const [vocaloid, yomigana] = left[Math.floor(Math.random() * left.length)];
-						words.push({ vocaloid, yomigana, sender: { type: 'computer' } });
+						words.push({ vocaloid, yomigana, sender: { type: 'computer', createdAt: Date.now() } });
 
 						thinking = false;
 					},

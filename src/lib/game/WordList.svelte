@@ -39,6 +39,7 @@
 			class:justify-end={gamemode === 'public' && isMe}
 			class:items-end={gamemode === 'public' && isMe}
 			class:items-start={gamemode === 'public' && !isMe}
+			title={sender.createdAt.toString()}
 		>
 			{#if !isMe && sender.type === 'user'}
 				<span class="text-xs font-bold text-blue-400">

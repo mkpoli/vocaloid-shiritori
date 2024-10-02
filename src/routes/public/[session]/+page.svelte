@@ -20,12 +20,12 @@
 	words={records.map((record) => {
 		const [vocaloid, yomigana] = [...vocaloids].find(([v, _y]) => v === record.songName) ?? [
 			record.songName,
-			record.songName
+			record.songName,
 		];
 		return {
 			vocaloid,
 			yomigana,
-			sender: { type: 'user', username: record.username }
+			sender: { type: 'user', username: record.username, createdAt: record.createdAt }
 		};
 	})}
 	gameId={game.id}

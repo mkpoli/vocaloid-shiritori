@@ -26,9 +26,11 @@ export type Sender =
 	| {
 			type: 'user';
 			username: string;
+			createdAt: number;
 		}
 	| {
 			type: 'computer';
+			createdAt: number;
 		};
 
 export type Word = {
