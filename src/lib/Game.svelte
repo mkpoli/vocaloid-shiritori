@@ -241,7 +241,7 @@
 				{/if}
 			</button>
 		{/if}
-		<div>スコア: {score}</div>
+		<div>{gamemode === 'public' ? `しりとり数 ${wordsLength}` : `スコア: ${score}`}</div>
 		{#if ['computer', 'single'].includes(gamemode)}
 			<button
 				onclick={async () => {
