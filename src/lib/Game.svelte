@@ -184,7 +184,7 @@
 
 	async function fetchNewRecords(): Promise<Word[]> {
 		if (gamemode !== 'public') {
-			return [];
+			return words;
 		}
 		const res = await fetch(`/api/public/${gameId}`, {
 			method: 'GET'
