@@ -36,26 +36,26 @@
 	let word = $state('');
 	let words: Word[] = $state(initialWords);
 	let thinking = $state(false);
-	
+
 	// Options
 	let allowN = $state(DEFAULT_SHIRITORI_OPTIONS.allowN);
 	let stripChouon = $state(DEFAULT_SHIRITORI_OPTIONS.stripChouon);
 	let ignorePunctuations = $state(DEFAULT_SHIRITORI_OPTIONS.ignorePunctuations);
 
 	const left = $derived(
-		words.length == 0
+		(words.length == 0
 			? [...vocaloids]
-			: [...vocaloids]
-					.filter(([vocaloid, yomigana]) => {
-						const lastYomigana = words.at(-1)?.yomigana;
-						if (!lastYomigana) {
-							return true;
-						}
-						const nextChar = getNextChar(lastYomigana, stripChouon);
-						return yomigana.startsWith(nextChar) || vocaloid.startsWith(nextChar);
-					})
-					.filter(([vocaloid]) => !words.some(({ vocaloid: v }) => v === vocaloid))
-					.filter(([, yomigana]) => allowN || !yomigana.endsWith('ん'))
+			: [...vocaloids].filter(([vocaloid, yomigana]) => {
+					const lastYomigana = words.at(-1)?.yomigana;
+					if (!lastYomigana) {
+						return true;
+					}
+					const nextChar = getNextChar(lastYomigana, stripChouon);
+					return yomigana.startsWith(nextChar) || vocaloid.startsWith(nextChar);
+				})
+				.filter(([vocaloid]) => !words.some(({ vocaloid: v }) => v === vocaloid))
+		)
+			.filter(([, yomigana]) => allowN || !yomigana.endsWith('ん'))
 	);
 
 	if (dev) {
