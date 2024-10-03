@@ -337,7 +337,9 @@
 	</form>
 {/if}
 
+{#if gamemode !== 'public'}
 <Options bind:allowN bind:stripChouon bind:ignorePunctuations />
+{/if}
 
 {#if gameOver}
 	<EndScreen
