@@ -143,9 +143,11 @@
 
 	let triggeredEnd = $state(false);
 
+	let wordsLength = $derived(words.length);
+
 	$effect(() => {
 		if (browser) {
-			if (words.length) {
+			if (wordsLength) {
 				input.scrollIntoView({ behavior: 'smooth', block: 'center' });
 			}
 		}
