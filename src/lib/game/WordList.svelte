@@ -25,6 +25,10 @@
 		minute: '2-digit',
 		second: '2-digit'
 	});
+
+	let sortedWords = $derived(words.toSorted((a, b) => a.sender.createdAt - b.sender.createdAt));
+
+	let showAll = $state(false);
 </script>
 
 {#snippet bubble(vocaloid: string, yomigana: string, sender: Sender)}
@@ -66,9 +70,31 @@
 	</li>
 {/snippet}
 <ul class="mx-auto flex w-full list-inside flex-col items-center justify-start gap-2 bg-white">
-	{#each words.toSorted((a, b) => a.sender.createdAt - b.sender.createdAt) as { vocaloid, yomigana, sender }}
-		{@render bubble(vocaloid, yomigana, sender)}
-	{/each}
+	{#if words.length <= 25}
+		{#each sortedWords as { vocaloid, yomigana, sender }}
+			{@render bubble(vocaloid, yomigana, sender)}
+		{/each}
+	{:else}
+		{#each sortedWords.slice(0, 4) as { vocaloid, yomigana, sender }}
+			{@render bubble(vocaloid, yomigana, sender)}
+		{/each}
+		{#if !showAll}
+			<li class="w-max self-center rounded-md p-2 text-center" title={`全てのしりとりを表示（${words.length - 20}件）`}>
+				<button class="text-gray-800 hover:text-black" onclick={() => (showAll = true)}> …… </button>
+			</li>
+		{:else}
+			<!-- show hided words -->
+			{#each sortedWords.slice(
+				4,
+				words.length - 20
+			) as { vocaloid, yomigana, sender }}
+				{@render bubble(vocaloid, yomigana, sender)}
+			{/each}
+		{/if}
+		{#each sortedWords.slice(-20) as { vocaloid, yomigana, sender }}
+			{@render bubble(vocaloid, yomigana, sender)}
+		{/each}
+	{/if}
 	{#if thinking}
 		<li class="w-max rounded-md p-2 shadow-sm">
 			<Thinking />
