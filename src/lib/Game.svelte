@@ -8,18 +8,17 @@
 	import WordList from './game/WordList.svelte';
 	import EndScreen from './game/EndScreen.svelte';
 	import { error } from '@sveltejs/kit';
+	import { userManager } from './user.svelte';
 
 	const {
 		vocaloids,
 		gamemode,
-		username,
 		words: initialWords = [],
 		gameId = undefined,
 		ended = false
 	}: {
 		vocaloids: Map<string, string>;
 		gamemode: Gamemode;
-		username: string;
 		words?: Word[];
 		gameId?: number;
 		ended?: boolean;
@@ -119,7 +118,7 @@
 
 		const res = await fetch('/api/score', {
 			method: 'POST',
-			body: JSON.stringify({ score, username, mode: gamemode })
+			body: JSON.stringify({ score, username: userManager.username, mode: gamemode })
 		});
 		const data = (await res.json()) as { rank: number };
 		return data.rank;
@@ -258,6 +257,7 @@
 	{/if}
 </div>
 
+
 <WordList {words} {gamemode} {thinking} {stripChouon} />
 
 {#if !ended}
@@ -304,7 +304,7 @@
 					return;
 			}
 
-			words.push({ vocaloid, yomigana, sender: { type: 'user', username, createdAt: Date.now() } });
+			words.push({ vocaloid, yomigana, sender: { type: 'user', username: userManager.username, createdAt: Date.now() } });
 
 			if (gamemode === 'computer') {
 				thinking = true;
@@ -322,7 +322,7 @@
 			if (gamemode === 'public') {
 				await fetch(`/api/public/${gameId}`, {
 					method: 'POST',
-					body: JSON.stringify({ vocaloid, username })
+					body: JSON.stringify({ vocaloid, username: userManager.username })
 				});
 
 				if (timer) {
@@ -365,6 +365,14 @@
 		><span class="text-xs text-gray-500">{left.length}曲</span>
 	</form>
 {/if}
+	
+{#if gamemode === 'public'}
+	<div class="flex gap-2 max-w-80 items-center mx-auto">
+		<label for="username">ユーザー名</label>
+		<input id="username" type="text" bind:value={userManager.username} placeholder="ユーザーネーム" class="rounded-md border border-gray-300 p-2" />
+	</div>
+{/if}
+
 
 {#if gamemode !== 'public'}
 <Options bind:allowN bind:stripChouon bind:ignorePunctuations />
@@ -373,7 +381,7 @@
 {#if gamemode !== 'public' && gameOver}
 	<EndScreen
 		{score}
-		winner={words.at(-1)?.sender.type === 'user' ? username : 'コンピュータ'}
+		winner={words.at(-1)?.sender.type === 'user' ? userManager.username : 'コンピュータ'}
 		lastWord={lastUserWord}
 		{gamemode}
 		{triggeredEnd}
@@ -399,7 +407,7 @@
 			const a = document.createElement('a');
 			a.style.display = 'none';
 			a.href = url;
-			a.download = `${username}-${gamemode}-${new Date().toISOString()}.csv`;
+			a.download = `${userManager.username}-${gamemode}-${new Date().toISOString()}.csv`;
 			document.body.appendChild(a);
 			a.click();
 			window.URL.revokeObjectURL(url);
