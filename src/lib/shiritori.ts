@@ -133,7 +133,7 @@ export function check(
 export function indexNextChar(word: string, stripChouon: boolean = true): number {
 	let index = word.length - 1;
 
-	while (/\p{Punctuation}$/u.test(word.at(index) ?? '')) {
+	while (/[\p{Punctuation}\p{Separator}]$/u.test(word.at(index) ?? '')) {
 		index--;
 	}
 
