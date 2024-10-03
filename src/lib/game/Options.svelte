@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { DEFAULT_SHIRITORI_OPTIONS } from '$lib/shiritori';
+	import { DEFAULT_SHIRITORI_OPTIONS, type ShiritoriOptions } from '$lib/shiritori';
 	import { getContext } from 'svelte';
 
 	let {
 		allowN = $bindable(DEFAULT_SHIRITORI_OPTIONS.allowN),
-		stripChouon = $bindable(DEFAULT_SHIRITORI_OPTIONS.stripChouon)
-	} = $props();
+		stripChouon = $bindable(DEFAULT_SHIRITORI_OPTIONS.stripChouon),
+		ignorePunctuations = $bindable(DEFAULT_SHIRITORI_OPTIONS.ignorePunctuations)
+	}: Partial<ShiritoriOptions> = $props();
 
 	const vocaloids = getContext<Map<string, string>>('vocaloids');
 </script>
@@ -24,6 +25,10 @@
 		<input type="checkbox" bind:checked={stripChouon} id="stripChouon" />
 		<label for="stripChouon">
 			長音「ー」を取り除きます（オフの場合「シー」→「い」のように母音接続）</label
+		>
+		<input type="checkbox" bind:checked={ignorePunctuations} id="ignorePunctuations" />
+		<label for="ignorePunctuations">
+			記号類を無視します（「。」「、」「！」「 」などがなくても見つかります）</label
 		>
 	</div>
 </fieldset>

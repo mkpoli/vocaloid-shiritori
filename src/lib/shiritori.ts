@@ -34,6 +34,8 @@ export interface ShiritoriOptions {
 	normalizeWiWeWo: boolean;
 	/** 「ぢ」「づ」を「じ」「ず」に変換するかどうか */
 	stripDiDuAsZiZu: boolean;
+	/** 記号類を無視するかどうか */
+	ignorePunctuations: boolean;
 }
 
 export const DEFAULT_SHIRITORI_OPTIONS: ShiritoriOptions = {
@@ -42,7 +44,8 @@ export const DEFAULT_SHIRITORI_OPTIONS: ShiritoriOptions = {
 	allowN: false,
 	normalizeZiDiZuDu: true,
 	normalizeWiWeWo: true,
-	stripDiDuAsZiZu: false
+	stripDiDuAsZiZu: false,
+	ignorePunctuations: true
 };
 
 export type ShiritoriValidity = 'valid' | 'trailing-n' | 'invalid';

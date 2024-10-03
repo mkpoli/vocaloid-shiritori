@@ -35,9 +35,12 @@
 
 	let word = $state('');
 	let words: Word[] = $state(initialWords);
+	let thinking = $state(false);
+	
+	// Options
 	let allowN = $state(DEFAULT_SHIRITORI_OPTIONS.allowN);
 	let stripChouon = $state(DEFAULT_SHIRITORI_OPTIONS.stripChouon);
-	let thinking = $state(false);
+	let ignorePunctuations = $state(DEFAULT_SHIRITORI_OPTIONS.ignorePunctuations);
 
 	const left = $derived(
 		words.length == 0
@@ -334,7 +337,7 @@
 	</form>
 {/if}
 
-<Options bind:allowN bind:stripChouon />
+<Options bind:allowN bind:stripChouon bind:ignorePunctuations />
 
 {#if gameOver}
 	<EndScreen

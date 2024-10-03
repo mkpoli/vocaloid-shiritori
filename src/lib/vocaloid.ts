@@ -24,9 +24,18 @@ export async function load(): Promise<[string, string][]> {
  * @param word 曲名
  * @returns 曲名がマップに存在する場合は曲名とひらがなを返す
  */
-export function find(map: Map<string, string>, word: string): [string, string] | undefined {
-	const normalized = normalize(word);
+export function find(map: Map<string, string>, word: string, ignorePunctuations = true): [string, string] | undefined {
+	let normalized = normalize(word);
+	if (ignorePunctuations) {
+		normalized = normalized.replace(/[\p{Punctuation}\p{Separator}]/gu, '');
+	}
 	return [...map.entries()].find(
-		([vocaloid, yomigana]) => yomigana === normalized || vocaloid === word
+		([vocaloid, yomigana]) => {
+			if (ignorePunctuations) {
+				vocaloid = vocaloid.replace(/[\p{Punctuation}\p{Separator}]/gu, '');
+				word = word.replace(/[\p{Punctuation}\p{Separator}]/gu, '');
+			}
+			return yomigana === normalized || vocaloid === word;
+		}
 	);
 }
