@@ -199,6 +199,8 @@
 			};
 		});
 	}
+
+	const randomBotUsername = `ボカロボット${Math.floor(Math.random() * 90000) + 10000}`;
 </script>
 
 <div class="flex items-center justify-center gap-2">
@@ -315,6 +317,24 @@
 					method: 'POST',
 					body: JSON.stringify({ vocaloid, username })
 				});
+
+				
+				setTimeout(async () => {
+					if (document.hidden) {
+						return;
+					}
+					const [vocaloid, yomigana] = left[Math.floor(Math.random() * left.length)];
+					words.push({
+						vocaloid,
+						yomigana,
+						sender: { type: 'user', createdAt: Date.now(), username: randomBotUsername }
+					});
+					await fetch(`/api/public/${gameId}`, {
+						method: 'POST',
+						body: JSON.stringify({ vocaloid, username: randomBotUsername })
+					});
+					await uploadScore();
+				}, 5000);
 			}
 
 			// TODO: Better alert
