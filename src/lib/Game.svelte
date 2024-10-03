@@ -203,6 +203,8 @@
 	}
 
 	const randomBotUsername = `ボカロボット${Math.floor(Math.random() * 90000) + 10000}`;
+
+	let timer: number | null = $state(null);
 </script>
 
 <div class="flex items-center justify-center gap-2">
@@ -320,8 +322,10 @@
 					body: JSON.stringify({ vocaloid, username })
 				});
 
-				
-				setTimeout(async () => {
+				if (timer) {
+					window.clearTimeout(timer);
+				}
+				timer = window.setTimeout(async () => {
 					if (document.hidden) {
 						return;
 					}
