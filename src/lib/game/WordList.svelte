@@ -58,7 +58,7 @@
 			</span>
 		{/if}
 		<ruby class="inline-flex gap-1 self-end">
-			{vocaloid}
+			{vocaloid.replace(/\/.*$/, '')}
 			<rt class="text-gray-400">
 				{@html [...segmenter.segment(yomigana)]
 					.map(({ segment }, i, arr) =>

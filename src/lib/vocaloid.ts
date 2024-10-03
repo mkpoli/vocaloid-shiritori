@@ -38,9 +38,9 @@ export function find(map: Map<string, string>, word: string, ignorePunctuations 
 		([vocaloid, yomigana]) => {
 			if (ignorePunctuations) {
 				vocaloid = vocaloid.replace(/[\p{Punctuation}\p{Separator}]/gu, '');
-				word = word.replace(/[\p{Punctuation}\p{Separator}]/gu, '');
+				word = word.replace(/[\p{Punctuation}\p{Separator}]/gu, '').replace(/\/.*$/, '');
 			}
-			return yomigana === normalized || vocaloid === word;
+			return yomigana === normalized || vocaloid === word || vocaloid.replace(/\/.+$/, '') === word;
 		}
 	);
 }
