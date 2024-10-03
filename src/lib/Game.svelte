@@ -108,6 +108,9 @@
 	let score = $derived(words.filter(({ sender }) => sender.type === 'user').length * 10); // TODO: Advanced scoring based on rarity and time and etc.
 
 	async function uploadScore(): Promise<number> {
+		if (gamemode === 'public') {
+			return 0;
+		}
 		const score = words.filter(({ sender }) => sender.type === 'user').length * 10;
 
 		if (score === 0) {
@@ -367,7 +370,7 @@
 <Options bind:allowN bind:stripChouon bind:ignorePunctuations />
 {/if}
 
-{#if gameOver}
+{#if gamemode !== 'public' && gameOver}
 	<EndScreen
 		{score}
 		winner={words.at(-1)?.sender.type === 'user' ? username : 'コンピュータ'}
