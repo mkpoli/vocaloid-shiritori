@@ -7,7 +7,7 @@
 </svelte:head>
 
 <header class="flex flex-col gap-4 py-8 text-center">
-	<h1 class="text-2xl font-bold">ボカロ曲名しりとり！</h1>
+	<h1 class="text-2xl font-bold"><a href="/" class="no-underline hover:underline">ボカロ曲名しりとり！</a></h1>
 	<p class="text-lg">「ボカロ曲名しりとり！」とは、ボカロ曲名を使ったしりとりゲームです。</p>
 </header>
 
