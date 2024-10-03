@@ -44,7 +44,7 @@
 
 <div class="pointer-events-none fixed inset-0 z-20 flex bg-black/50 backdrop-blur-sm"></div>
 <div
-	class="fixed left-1/2 top-1/2 z-30 flex h-max h-screen -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 rounded-lg bg-white/90 px-8 py-8 shadow-lg"
+	class="fixed left-1/2 top-1/2 z-30 flex h-max -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 rounded-lg bg-white/90 px-8 py-8 shadow-lg"
 >
 	<p class="text-4xl">🎉</p>
 	<h2 class="text-4xl font-bold leading-10 text-orange-500">ゲームオーバー</h2>
