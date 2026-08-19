@@ -1,52 +1,40 @@
-// TOOD: Calculate score on server-side
-
+import { publicGames } from '$lib/db/schema';
+import {
+	consumeWriteBudget,
+	inputError,
+	rateLimitResponse,
+	readJson,
+	username
+} from '$lib/server/api-security';
 import type { RequestHandler } from '@sveltejs/kit';
 import { drizzle } from 'drizzle-orm/d1';
-import { publicGames } from '$lib/db/schema';
-import { sql } from 'drizzle-orm';
-
-// export const GET: RequestHandler = async ({ request, platform }) => {
-// 	try {
-// 		const DB = platform?.env?.DB;
-// 		if (!DB) {
-// 			throw new Error('DB not found');
-// 		}
-// 		const db = drizzle(platform?.env.DB);
-// 		const games = await db.select().from(publicGames);
-
-// 		return new Response(JSON.stringify(games), { status: 200 });
-// 	} catch (error) {
-// 		console.error(error);
-// 		return new Response(null, { status: 500 });
-// 	}
-// };
 
 export const POST: RequestHandler = async ({ request, platform }) => {
-	try {
-		const { createdBy } = (await request.json()) as {
-			createdBy: string;
-		};
-		const DB = platform?.env?.DB;
-		if (!DB) {
-			throw new Error('DB not found');
-		}
-		const db = drizzle(platform?.env.DB);
+	const DB = platform?.env?.DB;
+	if (!DB) return Response.json({ message: 'Database unavailable' }, { status: 503 });
 
-		const result = await db
+	let input: unknown;
+	try {
+		input = await readJson(request);
+	} catch (error) {
+		return inputError(error);
+	}
+	const createdBy =
+		typeof input === 'object' && input !== null && 'createdBy' in input
+			? username(input.createdBy)
+			: null;
+	if (!createdBy) return Response.json({ message: 'Invalid username' }, { status: 400 });
+
+	try {
+		if (!(await consumeWriteBudget(DB))) return rateLimitResponse();
+		const db = drizzle(DB);
+		const [result] = await db
 			.insert(publicGames)
-			.values({
-				createdBy,
-				ended: 0
-			})
+			.values({ createdBy, ended: 0 })
 			.returning({ id: publicGames.id });
-		return new Response(
-			JSON.stringify({
-				id: result[0].id
-			}),
-			{ status: 200 }
-		);
+		return Response.json({ id: result.id }, { status: 201 });
 	} catch (error) {
 		console.error(error);
-		return new Response(null, { status: 500 });
+		return Response.json({ message: 'Failed to create game' }, { status: 500 });
 	}
 };

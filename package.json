@@ -30,6 +30,7 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "bun run build && wrangler pages dev",
+		"test": "bun test",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",

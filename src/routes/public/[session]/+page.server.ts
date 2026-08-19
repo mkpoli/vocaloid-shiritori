@@ -4,17 +4,20 @@ import type { PageServerLoad } from './$types';
 import { publicGameRecords, publicGames } from '$lib/db/schema';
 import { desc, eq } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
+import { gameId as parseGameId } from '$lib/server/api-security';
 
-export const load: PageServerLoad = async ({ platform, params }) => {
+const MAX_GAME_RECORDS = 250;
+
+export const load: PageServerLoad = async ({ platform, params, setHeaders }) => {
 	const DB = platform?.env?.DB;
 	if (!DB) {
 		throw new Error('DB not found');
 	}
 	const db = drizzle(DB);
 
-	const gameId = Number(params.session);
+	const gameId = parseGameId(params.session);
 
-	if (isNaN(gameId)) {
+	if (!gameId) {
 		throw error(403, 'Invalid game ID');
 	}
 
@@ -29,9 +32,10 @@ export const load: PageServerLoad = async ({ platform, params }) => {
 		.from(publicGameRecords)
 		.where(eq(publicGameRecords.gameId, gameId))
 		.orderBy(desc(publicGameRecords.createdAt))
-		.limit(1000);
+		.limit(MAX_GAME_RECORDS);
+	setHeaders({ 'cache-control': 'private, max-age=1' });
 	return {
 		game: game,
-		records: records
+		records: records.reverse()
 	};
 };
